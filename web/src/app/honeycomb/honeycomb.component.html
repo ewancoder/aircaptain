@@ -1,0 +1,12 @@
+<textarea #input></textarea>
+<button (click)="load()">Load</button>
+
+@for (profile of profiles; track profile.SaveName) {
+  <div (click)="loadProfile(profile)">
+    <aircap-hc-profile-card [profile]="profile"></aircap-hc-profile-card>
+  </div>
+}
+
+@if (currentProfile) {
+  <aircap-hc-profile [profile]="currentProfile"></aircap-hc-profile>
+}

@@ -1,0 +1,39 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.inner-checks {
+  margin-left: 5vw;
+}
+
+.check {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  background-color: rgb(246, 225, 225);
+  cursor: pointer;
+}
+
+.check:hover {
+  background-color: rgb(234, 196, 196);
+}
+
+.checked {
+  background-color: rgb(248, 199, 49);
+}
+
+.checked:hover {
+  background-color: rgb(192, 153, 37);
+}
+
+.check-line {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.description {
+  font-size: 0.8em;
+}

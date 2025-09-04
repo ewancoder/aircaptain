@@ -1,0 +1,12 @@
+<div class="check" [class.checked]="isChecked" (click)="toggle()">
+  <div class="check-line">
+    <div class="title">{{ check.title }}</div>
+    <div class="action">{{ check.action }}</div>
+  </div>
+  <div class="description">{{ check.description }}</div>
+</div>
+<div class="inner-checks">
+  @for (innerCheck of check.checks; track innerCheck.title) {
+    <aircap-check [check]="innerCheck"></aircap-check>
+  }
+</div>

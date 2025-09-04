@@ -1,0 +1,5 @@
+<textarea #input></textarea>
+<button (click)="generate()">Generate</button>
+@for (check of checks; track check.title) {
+  <aircap-check [check]="check"></aircap-check>
+}
