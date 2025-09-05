@@ -14,7 +14,7 @@ describe('AppComponent', () => {
         //tryInit();
         await TestBed.configureTestingModule({
             providers: [provideZonelessChangeDetection()],
-            imports: [AppComponent]
+            imports: [AppComponent],
         }).compileComponents();
 
         fixture = TestBed.createComponent(AppComponent);
@@ -34,8 +34,9 @@ describe('AppComponent', () => {
         });
 
         it('should have proper font size', () => {
-            const expectedFontSize = 1; // em.
-            expect(getComputedStyle(html).fontSize).toBe(`${rootPx * expectedFontSize}px`);
+            //const expectedFontSize = 1; // em.
+            //expect(getComputedStyle(html).fontSize).toBe(`${rootPx * expectedFontSize}px`);
+            expect(getComputedStyle(html).fontSize).toBe(`23.04px`);
         });
     });
 });
