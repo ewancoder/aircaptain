@@ -1,8 +1,9 @@
+<button (click)="showInteractibles = !showInteractibles">Toggle show interactibles</button>
 <svg (click)="deselectButton()" #svg width="1000" height="1000" viewBox="0 0 600 600">
   <image href="hc.png" x="0" y="0" width="600" height="600" />
   @for (btn of buttons; track btn.name) {
     <rect
-      [class.selected]="btn.name === selectedButton"
+      [class.selected]="btn.name === selectedButton || showInteractibles"
       (click)="selectButton(btn.name, $event)"
       class="btn"
       [attr.x]="btn.x - btn.w! / 2"

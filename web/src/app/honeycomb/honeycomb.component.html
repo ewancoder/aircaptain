@@ -7,4 +7,8 @@
   </div>
 }-->
 
-<aircap-hc-profile></aircap-hc-profile>
+<aircap-hc-profile (buttonSelected)="selectButton($event)"></aircap-hc-profile>
+
+@if (selectedButton) {
+  Selected button: {{ selectedButton }}
+}

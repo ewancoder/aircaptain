@@ -10,6 +10,7 @@ import { ProfileComponent } from './profile/profile.component';
 })
 export class HoneycombComponent {
     @ViewChild('input') input!: ElementRef<HTMLTextAreaElement>;
+    selectedButton: string | null = null;
     profiles: Profile[] = [];
     currentProfile: Profile = {
         Version: 1,
@@ -30,5 +31,9 @@ export class HoneycombComponent {
 
     loadProfile(profile: Profile) {
         this.currentProfile = profile;
+    }
+
+    selectButton(button: string | null) {
+        this.selectedButton = button;
     }
 }
