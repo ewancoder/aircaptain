@@ -8,6 +8,11 @@
   fill: rgba(250, 170, 50, 0.6);
 }
 
+.highlighted {
+  fill: rgba(250, 170, 50, 0.3);
+  border: 2px solid;
+}
+
 .selected {
   fill: rgba(250, 170, 50, 0.8) !important;
   border: 2px solid;
