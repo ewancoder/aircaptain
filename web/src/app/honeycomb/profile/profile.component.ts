@@ -22,6 +22,7 @@ interface Button {
 })
 export class ProfileComponent implements OnInit {
     @ViewChild('svg') svg!: ElementRef<SVGSVGElement>;
+    selectedButton: string | null = null;
 
     protected buttons: Button[] = [
         { name: 'AP HDG', x: 220, y: 194, class: 'small' },
@@ -30,6 +31,15 @@ export class ProfileComponent implements OnInit {
 
     ngOnInit() {
         this.initializeButtonSizes();
+    }
+
+    selectButton(buttonName: string, evt: MouseEvent) {
+        this.selectedButton = buttonName;
+        evt.stopPropagation(); // So that we do not deselect a button right after selecting it.
+    }
+
+    deselectButton() {
+        this.selectedButton = null;
     }
 
     private initializeButtonSizes() {
