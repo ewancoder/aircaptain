@@ -1,11 +1,10 @@
-import { ChangeDetectionStrategy, Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { Profile, Root } from './model';
-import { ProfileCardComponent } from './profile-card/profile-card.component';
 import { ProfileComponent } from './profile/profile.component';
 
 @Component({
     selector: 'aircap-honeycomb',
-    imports: [ProfileCardComponent, ProfileComponent],
+    imports: [ProfileComponent],
     templateUrl: './honeycomb.component.html',
     styleUrl: './honeycomb.component.scss',
 })

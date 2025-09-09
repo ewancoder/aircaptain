@@ -1,17 +1,3 @@
-:host {
-  display: flex;
-  flex-direction: column;
-}
-
-.hc-canvas {
-  height: 600px;
-  width: 600px;
-}
-
-.selected {
-  color: red;
-}
-
 .btn {
   fill: rgba(250, 170, 50, 0);
   cursor: pointer;
