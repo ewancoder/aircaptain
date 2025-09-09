@@ -4,7 +4,7 @@ import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '
 // Button can switch to a specific "layer"
 // Button can have a specific name/description for a specific layer (and printable per-layer map)
 
-interface Button {
+export interface Button {
     name: string;
     x: number;
     y: number;
@@ -12,6 +12,18 @@ interface Button {
     w?: number;
     h?: number;
     r?: number;
+    controllerLed?: ControllerLed;
+    controllerButtons?: ControllerButton[];
+}
+
+export interface ControllerButton {
+    name?: string;
+    buttonNumber: number;
+}
+
+interface ControllerLed {
+    byteIndex: number;
+    bitIndex: number;
 }
 
 @Component({
@@ -22,14 +34,32 @@ interface Button {
 })
 export class ProfileComponent implements OnInit {
     @ViewChild('svg') svg!: ElementRef<SVGSVGElement>;
-    @Output() buttonSelected = new EventEmitter<string | null>();
-    selectedButton: string | null = null;
+    @Output() buttonSelected = new EventEmitter<Button | null>();
+    selectedButton: Button | null = null;
     showInteractibles = false;
 
     protected buttons: Button[] = [
-        { name: 'AP HDG', x: 220, y: 194, class: 'small' },
-        { name: 'AP NAV', x: 247, y: 194, class: 'small' },
-        { name: 'AP APR', x: 274, y: 194, class: 'small' },
+        {
+            name: 'AP HDG',
+            x: 220,
+            y: 194,
+            class: 'small',
+            controllerButtons: [{ buttonNumber: 0 }],
+        },
+        {
+            name: 'AP NAV',
+            x: 247,
+            y: 194,
+            class: 'small',
+            controllerButtons: [{ buttonNumber: 1 }],
+        },
+        {
+            name: 'AP APR',
+            x: 274,
+            y: 194,
+            class: 'small',
+            controllerButtons: [{ buttonNumber: 2 }],
+        },
         { name: 'AP REV', x: 301, y: 194, class: 'small' },
         { name: 'AP ALT', x: 328, y: 194, class: 'small' },
         { name: 'AP VS', x: 355, y: 194, class: 'small' },
@@ -37,7 +67,18 @@ export class ProfileComponent implements OnInit {
         { name: 'FCU', x: 178, y: 196, class: 'large' },
         { name: 'Rotary', x: 419, y: 196, class: 'large' },
         { name: 'AP', x: 479, y: 195, w: 38, h: 38, r: 10 },
-        { name: 'Gear', x: 85, y: 303, w: 70, h: 90, r: 15 },
+        {
+            name: 'Gear',
+            x: 85,
+            y: 303,
+            w: 70,
+            h: 90,
+            r: 15,
+            controllerButtons: [
+                { name: 'Gear Up', buttonNumber: 30 },
+                { name: 'Gear Down', buttonNumber: 31 },
+            ],
+        },
         { name: 'Toggle 1', x: 202, y: 292, class: 'toggle' },
         { name: 'Toggle 2', x: 235, y: 292, class: 'toggle' },
         { name: 'Toggle 3', x: 268, y: 292, class: 'toggle' },
@@ -53,7 +94,16 @@ export class ProfileComponent implements OnInit {
         { name: 'Throttle 4', x: 327, y: 554, class: 'throttle' },
         { name: 'Throttle 5', x: 379, y: 554, class: 'throttle' },
         { name: 'Throttle 6', x: 434, y: 554, class: 'throttle' },
-        { name: 'Led Warning', x: 202, y: 347, class: 'led' },
+        {
+            name: 'Led Warning',
+            x: 202,
+            y: 347,
+            class: 'led',
+            controllerLed: {
+                byteIndex: 2,
+                bitIndex: 6,
+            },
+        },
         { name: 'Led Caution', x: 202, y: 363, class: 'led' },
         { name: 'Led Engine Fire', x: 232, y: 347, class: 'led' },
         { name: 'Led Vacuum', x: 232, y: 363, class: 'led' },
@@ -73,9 +123,9 @@ export class ProfileComponent implements OnInit {
         this.initializeButtonSizes();
     }
 
-    selectButton(buttonName: string, evt: MouseEvent) {
-        this.selectedButton = buttonName;
-        this.buttonSelected.emit(buttonName);
+    selectButton(button: Button, evt: MouseEvent) {
+        this.selectedButton = button;
+        this.buttonSelected.emit(button);
         evt.stopPropagation(); // So that we do not deselect a button right after selecting it.
     }
 

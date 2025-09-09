@@ -1,0 +1,12 @@
+{{ button.ButtonNumber }}
+
+Press events:
+<button (click)="newPressEvent()">New press event</button>
+@for (event of button.PressEvent; track $index) {
+  <aircap-hc-event [event]="event"></aircap-hc-event>
+}
+Release events:
+<button (click)="newReleaseEvent()">New release event</button>
+@for (event of button.ReleaseEvent; track $index) {
+  <aircap-hc-event [event]="event"></aircap-hc-event>
+}

@@ -13,11 +13,11 @@ export interface Profile {
 
 export interface Daum {
     ButtonNumber: number;
-    PressEvent: PressEvent[];
-    ReleaseEvent: ReleaseEvent[];
+    PressEvent: PressReleaseEvent[];
+    ReleaseEvent: PressReleaseEvent[];
 }
 
-export interface PressEvent {
+export interface PressReleaseEvent {
     Variables: Variable[];
     Variable: string;
     Value: string;
@@ -46,57 +46,10 @@ export interface Condition {
     Variable: string;
     Value: string;
     VariableIsCustom: boolean;
-    VariableBoundaries: VariableBoundaries2;
+    VariableBoundaries: VariableBoundaries;
     Condition: string;
     ConditionValue: string;
     ConditionIsCustom: boolean;
-}
-
-export interface VariableBoundaries2 {
-    MinValue: string;
-    MaxValue: string;
-    Clamp: boolean;
-}
-
-export interface ReleaseEvent {
-    Variables: Variable2[];
-    Variable: string;
-    Value: string;
-    Name: string;
-    Condition: string;
-    ConditionValue: string;
-    ConditionLogic: string;
-    Conditions: Condition2[];
-    Repeat: number;
-}
-
-export interface Variable2 {
-    Variable: string;
-    Value: string;
-    VariableIsCustom: boolean;
-    VariableBoundaries: VariableBoundaries3;
-}
-
-export interface VariableBoundaries3 {
-    MinValue: string;
-    MaxValue: string;
-    Clamp: boolean;
-}
-
-export interface Condition2 {
-    Variable: string;
-    Value: string;
-    VariableIsCustom: boolean;
-    VariableBoundaries: VariableBoundaries4;
-    Condition: string;
-    ConditionValue: string;
-    ConditionIsCustom: boolean;
-}
-
-export interface VariableBoundaries4 {
-    MinValue: string;
-    MaxValue: string;
-    Clamp: boolean;
 }
 
 export interface Led {

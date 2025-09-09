@@ -1,19 +1,29 @@
-import { AsyncPipe } from '@angular/common';
 import { Component, Input } from '@angular/core';
-import { Daum } from '../model';
-import { Observable } from 'rxjs';
+import { Button, ControllerButton } from '../profile/profile.component';
+import { ControllerButtonComponent } from '../controller-button/controller-button.component';
+import { Profile } from '../model';
 
 @Component({
     selector: 'aircap-hc-button',
-    imports: [],
+    imports: [ControllerButtonComponent],
     templateUrl: './button.component.html',
     styleUrl: './button.component.scss',
 })
 export class ButtonComponent {
-    @Input({ required: true }) button!: Daum;
-}
+    @Input({ required: true }) button!: Button;
+    @Input({ required: true }) profile!: Profile;
 
-export interface ButtonInfo {
-    profile: Daum;
-    name: string;
+    getControllerButton(button: ControllerButton) {
+        let found = this.profile.Data.find((d) => d.ButtonNumber === button.buttonNumber);
+        if (!found) {
+            found = {
+                ButtonNumber: button.buttonNumber,
+                PressEvent: [],
+                ReleaseEvent: [],
+            };
+            this.profile.Data.push(found);
+        }
+
+        return found;
+    }
 }

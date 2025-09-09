@@ -10,5 +10,5 @@
 <aircap-hc-profile (buttonSelected)="selectButton($event)"></aircap-hc-profile>
 
 @if (selectedButton) {
-  Selected button: {{ selectedButton }}
+  <aircap-hc-button [button]="selectedButton" [profile]="currentProfile"></aircap-hc-button>
 }

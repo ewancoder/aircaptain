@@ -1,16 +1,17 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { Profile, Root } from './model';
-import { ProfileComponent } from './profile/profile.component';
+import { Button, ProfileComponent } from './profile/profile.component';
+import { ButtonComponent } from './button/button.component';
 
 @Component({
     selector: 'aircap-honeycomb',
-    imports: [ProfileComponent],
+    imports: [ProfileComponent, ButtonComponent],
     templateUrl: './honeycomb.component.html',
     styleUrl: './honeycomb.component.scss',
 })
 export class HoneycombComponent {
     @ViewChild('input') input!: ElementRef<HTMLTextAreaElement>;
-    selectedButton: string | null = null;
+    selectedButton: Button | null = null;
     profiles: Profile[] = [];
     currentProfile: Profile = {
         Version: 1,
@@ -33,7 +34,7 @@ export class HoneycombComponent {
         this.currentProfile = profile;
     }
 
-    selectButton(button: string | null) {
+    selectButton(button: Button | null) {
         this.selectedButton = button;
     }
 }

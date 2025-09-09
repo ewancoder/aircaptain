@@ -3,9 +3,9 @@
   <image href="hc.png" x="0" y="0" width="600" height="600" />
   @for (btn of buttons; track btn.name) {
     <rect
-      [class.selected]="btn.name === selectedButton"
+      [class.selected]="btn.name === selectedButton?.name"
       [class.highlighted]="showInteractibles"
-      (click)="selectButton(btn.name, $event)"
+      (click)="selectButton(btn, $event)"
       class="btn"
       [attr.x]="btn.x - btn.w! / 2"
       [attr.y]="btn.y - btn.h! / 2"
