@@ -12,16 +12,27 @@ import { ButtonComponent } from './button/button.component';
 export class HoneycombComponent {
     @ViewChild('input') input!: ElementRef<HTMLTextAreaElement>;
     selectedButton: Button | null = null;
-    profiles: Profile[] = [];
-    currentProfile: Profile = {
-        Version: 1,
-        SaveName: 'New',
-        ConfiguratorSettings: {
-            device: 'Bravo Throttle Quadrant',
+    profiles: Profile[] = [
+        {
+            Version: 1,
+            SaveName: 'New',
+            ConfiguratorSettings: {
+                device: 'Bravo Throttle Quadrant',
+            },
+            Data: [],
+            LEDs: [],
         },
-        Data: [],
-        LEDs: [],
-    };
+    ];
+
+    currentProfile!: Profile;
+
+    ngOnInit() {
+        this.currentProfile = this.profiles[0];
+    }
+
+    copyProfileToClipboard() {
+        navigator.clipboard.writeText(JSON.stringify(this.profiles));
+    }
 
     load() {
         const content = this.input.nativeElement.value;

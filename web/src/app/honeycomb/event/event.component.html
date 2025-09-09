@@ -3,3 +3,19 @@ name: <input [(ngModel)]="event.Name" />
   <option value="AND">AND</option>
   <option value="OR">OR</option>
 </select>
+<button (click)="addCondition()">Add condition</button>
+@for (condition of event.Conditions; track $index) {
+  <label>Condition</label>
+  <input [(ngModel)]="condition.Condition" />
+  <label>Value</label>
+  <input [(ngModel)]="condition.Value" />
+  <button (click)="deleteCondition(condition)">del</button>
+}
+<button (click)="addVariable()">Add variable</button>
+@for (variable of event.Variables; track $index) {
+  <label>Variable</label>
+  <input [(ngModel)]="variable.Variable" />
+  <label>Value</label>
+  <input [(ngModel)]="variable.Value" />
+  <button (click)="deleteVariable(variable)">del</button>
+}

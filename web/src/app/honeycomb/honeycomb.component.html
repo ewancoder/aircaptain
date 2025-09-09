@@ -1,12 +1,4 @@
-<!--<textarea #input></textarea>
-<button (click)="load()">Load</button>
-
-@for (profile of profiles; track profile.SaveName) {
-  <div (click)="loadProfile(profile)">
-    <aircap-hc-profile-card [profile]="profile"></aircap-hc-profile-card>
-  </div>
-}-->
-
+<button (click)="copyProfileToClipboard()">Copy profile to clipboard</button>
 <aircap-hc-profile (buttonSelected)="selectButton($event)"></aircap-hc-profile>
 
 @if (selectedButton) {

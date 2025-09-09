@@ -117,6 +117,9 @@ export class ProfileComponent implements OnInit {
         { name: 'Led Low Volts', x: 352, y: 363, class: 'led' },
         { name: 'Led Apu', x: 382, y: 347, class: 'led' },
         { name: 'Led Door', x: 382, y: 363, class: 'led' },
+        { name: 'Led Gear Top', x: 88, y: 204, w: 34, h: 22, r: 5 },
+        { name: 'Led Gear Left', x: 74, y: 234, w: 26, h: 28, r: 5 },
+        { name: 'Led Gear Right', x: 112, y: 234, w: 26, h: 28, r: 5 },
     ];
 
     ngOnInit() {
