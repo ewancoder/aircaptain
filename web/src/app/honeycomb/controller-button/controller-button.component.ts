@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Daum } from '../model';
+import { Daum, PressReleaseEvent } from '../model';
 import { EventComponent } from '../event/event.component';
 
 @Component({
@@ -36,5 +36,15 @@ export class ControllerButtonComponent {
             Conditions: [],
             Repeat: 0,
         });
+    }
+    del(event: PressReleaseEvent) {
+        let index = this.button.PressEvent.indexOf(event);
+        if (index >= 0) {
+            this.button.PressEvent.splice(index, 1);
+        }
+        index = this.button.ReleaseEvent.indexOf(event);
+        if (index >= 0) {
+            this.button.ReleaseEvent.splice(index, 1);
+        }
     }
 }
