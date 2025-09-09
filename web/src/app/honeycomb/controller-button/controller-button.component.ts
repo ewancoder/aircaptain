@@ -18,7 +18,7 @@ export class ControllerButtonComponent {
             Name: '',
             Condition: '',
             ConditionValue: '',
-            ConditionLogic: '',
+            ConditionLogic: 'AND',
             Conditions: [],
             Repeat: 0,
         });
@@ -32,7 +32,7 @@ export class ControllerButtonComponent {
             Name: '',
             Condition: '',
             ConditionValue: '',
-            ConditionLogic: '',
+            ConditionLogic: 'AND',
             Conditions: [],
             Repeat: 0,
         });
