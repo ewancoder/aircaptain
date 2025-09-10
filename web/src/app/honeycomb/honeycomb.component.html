@@ -1,4 +1,8 @@
-<button (click)="copyProfileToClipboard()">Copy profile to clipboard</button>
+<div class="header">
+  <button (click)="copyProfileToClipboard()">Copy profile to clipboard</button>
+  <textarea #profileInput></textarea>
+  <button (click)="load()">Load</button>
+</div>
 <div class="hc">
   <aircap-hc-profile (buttonSelected)="selectButton($event)"></aircap-hc-profile>
 

@@ -12,7 +12,7 @@
 @for (condition of event.Conditions; track $index) {
   <div class="inputs">
     <input class="dataref" placeholder="Condition" [(ngModel)]="condition.Condition" />
-    <input placeholder="Value" [(ngModel)]="condition.Value" />
+    <input placeholder="Value" [(ngModel)]="condition.ConditionValue" />
     <button class="del-btn" (click)="deleteCondition(condition)">✖</button>
   </div>
 }

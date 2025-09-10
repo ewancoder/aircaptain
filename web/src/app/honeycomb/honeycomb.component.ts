@@ -10,7 +10,7 @@ import { ButtonComponent } from './button/button.component';
     styleUrl: './honeycomb.component.scss',
 })
 export class HoneycombComponent {
-    @ViewChild('input') input!: ElementRef<HTMLTextAreaElement>;
+    @ViewChild('profileInput') input!: ElementRef<HTMLTextAreaElement>;
     selectedButton: Button | null = null;
     profiles: Profile[] = [
         {
@@ -39,6 +39,7 @@ export class HoneycombComponent {
         const object = JSON.parse(content) as Root;
         console.log(object);
         this.profiles = object.profiles;
+        this.currentProfile = this.profiles[0];
     }
 
     loadProfile(profile: Profile) {
