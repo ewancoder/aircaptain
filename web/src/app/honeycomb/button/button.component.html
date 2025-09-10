@@ -1,6 +1,6 @@
 @for (btn of button.controllerButtons; track btn.buttonNumber) {
   <aircap-hc-controller-button
-    [buttonName]="btn.name ?? button.name"
+    [buttonName]="button.name + (btn.name ? ' ' + btn.name : '')"
     [button]="getControllerButton(btn)"
   ></aircap-hc-controller-button>
 }
