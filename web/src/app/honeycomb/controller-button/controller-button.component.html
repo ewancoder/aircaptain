@@ -1,12 +1,18 @@
 <div class="header">
-  <div>{{ buttonName }} ({{ button.ButtonNumber }}) Press events</div>
+  <div>
+    {{ buttonName }} <span class="sub-name">{{ buttonSubName }}</span> ({{ button.ButtonNumber }})
+    Press events
+  </div>
   <button class="add-btn" (click)="newPressEvent()">+</button>
 </div>
 @for (event of button.PressEvent; track $index) {
   <aircap-hc-event [event]="event" (eventDeleted)="del(event)"></aircap-hc-event>
 }
 <div class="header">
-  <div>{{ buttonName }} ({{ button.ButtonNumber }}) Release events</div>
+  <div>
+    {{ buttonName }} <span class="sub-name">{{ buttonSubName }}</span> ({{ button.ButtonNumber }})
+    Release events
+  </div>
   <button class="add-btn" (click)="newReleaseEvent()">+</button>
 </div>
 @for (event of button.ReleaseEvent; track $index) {

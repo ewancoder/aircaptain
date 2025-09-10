@@ -11,6 +11,7 @@ import { EventComponent } from '../event/event.component';
 export class ControllerButtonComponent {
     @Input({ required: true }) button!: Daum;
     @Input({ required: true }) buttonName!: string | undefined;
+    @Input({ required: true }) buttonSubName!: string | undefined;
     newPressEvent() {
         this.button.PressEvent.push({
             Variables: [],
