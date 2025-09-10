@@ -13,6 +13,15 @@ export class ControllerButtonComponent {
     @Input({ required: true }) buttonName!: string | undefined;
     @Input({ required: true }) buttonSubName!: string | undefined;
     newPressEvent() {
+        let repeat = 0;
+        if (
+            this.button.ButtonNumber === 21 ||
+            this.button.ButtonNumber === 22 ||
+            this.button.ButtonNumber === 12 ||
+            this.button.ButtonNumber === 13
+        ) {
+            repeat = 3;
+        }
         this.button.PressEvent.push({
             Variables: [],
             Variable: '',
@@ -22,11 +31,12 @@ export class ControllerButtonComponent {
             ConditionValue: '',
             ConditionLogic: 'AND',
             Conditions: [],
-            Repeat: 0,
+            Repeat: repeat,
         });
         console.log(this.button);
     }
     newReleaseEvent() {
+        let repeat = 0;
         this.button.ReleaseEvent.push({
             Variables: [],
             Variable: '',
@@ -36,7 +46,7 @@ export class ControllerButtonComponent {
             ConditionValue: '',
             ConditionLogic: 'AND',
             Conditions: [],
-            Repeat: 0,
+            Repeat: repeat,
         });
     }
     del(event: PressReleaseEvent) {
