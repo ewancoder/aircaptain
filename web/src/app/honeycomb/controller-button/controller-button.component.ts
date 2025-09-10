@@ -10,12 +10,13 @@ import { EventComponent } from '../event/event.component';
 })
 export class ControllerButtonComponent {
     @Input({ required: true }) button!: Daum;
+    @Input({ required: true }) buttonName!: string | undefined;
     newPressEvent() {
         this.button.PressEvent.push({
             Variables: [],
             Variable: '',
             Value: '',
-            Name: '',
+            Name: 'Button ' + (this.buttonName ?? this.button.ButtonNumber) + ' is pressed',
             Condition: '',
             ConditionValue: '',
             ConditionLogic: 'AND',
@@ -29,7 +30,7 @@ export class ControllerButtonComponent {
             Variables: [],
             Variable: '',
             Value: '',
-            Name: '',
+            Name: 'Button ' + (this.buttonName ?? this.button.ButtonNumber) + ' is released',
             Condition: '',
             ConditionValue: '',
             ConditionLogic: 'AND',
@@ -38,6 +39,7 @@ export class ControllerButtonComponent {
         });
     }
     del(event: PressReleaseEvent) {
+        if (!confirm('Delete event "' + event.Name + '"?')) return;
         let index = this.button.PressEvent.indexOf(event);
         if (index >= 0) {
             this.button.PressEvent.splice(index, 1);

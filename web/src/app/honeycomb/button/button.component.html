@@ -1,6 +1,6 @@
-{{ button.name }}
-
 @for (btn of button.controllerButtons; track btn.buttonNumber) {
-  {{ btn.name }}
-  <aircap-hc-controller-button [button]="getControllerButton(btn)"></aircap-hc-controller-button>
+  <aircap-hc-controller-button
+    [buttonName]="btn.name ?? button.name"
+    [button]="getControllerButton(btn)"
+  ></aircap-hc-controller-button>
 }

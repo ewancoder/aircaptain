@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Condition, PressReleaseEvent, Variable } from '../model';
 import { FormsModule } from '@angular/forms';
 
@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class EventComponent {
     @Input({ required: true }) event!: PressReleaseEvent;
+    @Output() eventDeleted = new EventEmitter<void>();
 
     addCondition() {
         this.event.Conditions.push({
@@ -39,15 +40,20 @@ export class EventComponent {
         });
     }
     deleteCondition(condition: Condition) {
+        if (condition.Condition && !confirm(`Delete condition "${condition.Condition}"?`)) return;
         const found = this.event.Conditions.indexOf(condition);
         if (found >= 0) {
             this.event.Conditions.splice(found, 1);
         }
     }
     deleteVariable(variable: Variable) {
+        if (variable.Variable && !confirm(`Delete variable "${variable.Variable}"?`)) return;
         const found = this.event.Variables.indexOf(variable);
         if (found >= 0) {
             this.event.Variables.splice(found, 1);
         }
+    }
+    deleteEvent() {
+        this.eventDeleted.emit();
     }
 }

@@ -1,21 +1,28 @@
-name: <input [(ngModel)]="event.Name" />
-<select [(ngModel)]="event.ConditionLogic">
-  <option value="AND">AND</option>
-  <option value="OR">OR</option>
-</select>
-<button (click)="addCondition()">Add condition</button>
+<div class="header">
+  <input [(ngModel)]="event.Name" />
+  <button class="del-btn" (click)="deleteEvent()">✖</button>
+</div>
+<div class="header">
+  <button (click)="addCondition()">Add condition</button>
+  <select [(ngModel)]="event.ConditionLogic">
+    <option value="AND">AND</option>
+    <option value="OR">OR</option>
+  </select>
+</div>
 @for (condition of event.Conditions; track $index) {
-  <label>Condition</label>
-  <input [(ngModel)]="condition.Condition" />
-  <label>Value</label>
-  <input [(ngModel)]="condition.Value" />
-  <button (click)="deleteCondition(condition)">del</button>
+  <div class="inputs">
+    <input class="dataref" placeholder="Condition" [(ngModel)]="condition.Condition" />
+    <input placeholder="Value" [(ngModel)]="condition.Value" />
+    <button class="del-btn" (click)="deleteCondition(condition)">✖</button>
+  </div>
 }
-<button (click)="addVariable()">Add variable</button>
+<div class="header">
+  <button (click)="addVariable()">Add variable</button>
+</div>
 @for (variable of event.Variables; track $index) {
-  <label>Variable</label>
-  <input [(ngModel)]="variable.Variable" />
-  <label>Value</label>
-  <input [(ngModel)]="variable.Value" />
-  <button (click)="deleteVariable(variable)">del</button>
+  <div class="inputs">
+    <input class="dataref" placeholder="Variable" [(ngModel)]="variable.Variable" />
+    <input placeholder="Value" [(ngModel)]="variable.Value" />
+    <button class="del-btn" (click)="deleteVariable(variable)">✖</button>
+  </div>
 }

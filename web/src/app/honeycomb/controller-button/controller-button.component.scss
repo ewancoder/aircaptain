@@ -1,0 +1,29 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  margin: 5px;
+  min-width: 800px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.add-btn {
+  font-size: 20px;
+  height: 30px;
+  width: 30px;
+  border: 1px solid;
+  border-radius: 50px;
+  background-color: aquamarine;
+  opacity: 0.6;
+  transition: 0.1s;
+}
+
+.add-btn:hover {
+  opacity: 1;
+}

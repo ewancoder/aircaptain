@@ -1,6 +1,8 @@
 <button (click)="copyProfileToClipboard()">Copy profile to clipboard</button>
-<aircap-hc-profile (buttonSelected)="selectButton($event)"></aircap-hc-profile>
+<div class="hc">
+  <aircap-hc-profile (buttonSelected)="selectButton($event)"></aircap-hc-profile>
 
-@if (selectedButton) {
-  <aircap-hc-button [button]="selectedButton" [profile]="currentProfile"></aircap-hc-button>
-}
+  @if (selectedButton) {
+    <aircap-hc-button [button]="selectedButton" [profile]="currentProfile"></aircap-hc-button>
+  }
+</div>

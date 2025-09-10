@@ -1,4 +1,6 @@
-<button (click)="showInteractibles = !showInteractibles">Toggle show interactibles</button>
+<button class="interactibles" (click)="showInteractibles = !showInteractibles">
+  Toggle show interactibles
+</button>
 <svg (click)="deselectButton()" #svg width="600" height="600" viewBox="0 0 600 600">
   <image href="hc.png" x="0" y="0" width="600" height="600" />
   @for (btn of buttons; track btn.name) {
