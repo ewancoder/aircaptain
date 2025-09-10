@@ -12,6 +12,9 @@ export class ControllerButtonComponent {
     @Input({ required: true }) button!: Daum;
     @Input({ required: true }) buttonName!: string | undefined;
     @Input({ required: true }) buttonSubName!: string | undefined;
+    sort(events: PressReleaseEvent[]) {
+        return events.sort((a, b) => a.Name.localeCompare(b.Name));
+    }
     newPressEvent() {
         let repeat = 0;
         if (
@@ -26,7 +29,7 @@ export class ControllerButtonComponent {
             Variables: [],
             Variable: '',
             Value: '',
-            Name: 'Button ' + (this.buttonName ?? this.button.ButtonNumber) + ' is pressed',
+            Name: '___Button ' + (this.buttonName ?? this.button.ButtonNumber) + ' is pressed',
             Condition: '',
             ConditionValue: '',
             ConditionLogic: 'AND',
@@ -41,7 +44,7 @@ export class ControllerButtonComponent {
             Variables: [],
             Variable: '',
             Value: '',
-            Name: 'Button ' + (this.buttonName ?? this.button.ButtonNumber) + ' is released',
+            Name: '___Button ' + (this.buttonName ?? this.button.ButtonNumber) + ' is released',
             Condition: '',
             ConditionValue: '',
             ConditionLogic: 'AND',

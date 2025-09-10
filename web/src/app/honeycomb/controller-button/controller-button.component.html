@@ -5,7 +5,7 @@
   </div>
   <button class="add-btn" (click)="newPressEvent()">+</button>
 </div>
-@for (event of button.PressEvent; track $index) {
+@for (event of sort(button.PressEvent); track $index) {
   <aircap-hc-event [event]="event" (eventDeleted)="del(event)"></aircap-hc-event>
 }
 <div class="header">
