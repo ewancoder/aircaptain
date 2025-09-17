@@ -5,3 +5,10 @@
     [button]="getControllerButton(btn)"
   ></aircap-hc-controller-button>
 }
+@for (led of button.controllerLeds; track $index) {
+  <aircap-hc-controller-led
+    [buttonName]="button.name"
+    [buttonSubName]="led.name"
+    [led]="getControllerLed(led)"
+  ></aircap-hc-controller-led>
+}

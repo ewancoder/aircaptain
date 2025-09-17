@@ -56,10 +56,10 @@ export interface Led {
     ByteIndex: number;
     BitIndex: number;
     ConditionLogic: string;
-    Conditions: Condition3[];
+    Conditions: LedCondition[];
 }
 
-export interface Condition3 {
+export interface LedCondition {
     Condition: string;
     ConditionValue: string;
     ConditionIsCustom: boolean;

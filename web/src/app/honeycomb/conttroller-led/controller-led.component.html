@@ -1,0 +1,19 @@
+<div class="header">
+  <div>
+    <b>LED</b> {{ buttonName }} <span class="sub-name">{{ buttonSubName }}</span> ({{
+      led.ByteIndex
+    }}-{{ led.BitIndex }}) Conditions
+  </div>
+  <button class="add-btn" (click)="addCondition()">+</button>
+  <select [(ngModel)]="led.ConditionLogic">
+    <option value="AND">AND</option>
+    <option value="OR">OR</option>
+  </select>
+</div>
+@for (condition of led.Conditions; track $index) {
+  <div class="inputs">
+    <input class="dataref" placeholder="Condition" [(ngModel)]="condition.Condition" />
+    <input placeholder="Value" [(ngModel)]="condition.ConditionValue" />
+    <button class="del-btn" (click)="deleteCondition(condition)">✖</button>
+  </div>
+}

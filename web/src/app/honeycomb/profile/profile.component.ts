@@ -12,7 +12,7 @@ export interface Button {
     w?: number;
     h?: number;
     r?: number;
-    controllerLed?: ControllerLed;
+    controllerLeds?: ControllerLed[];
     controllerButtons?: ControllerButton[];
 }
 
@@ -21,7 +21,8 @@ export interface ControllerButton {
     buttonNumber: number;
 }
 
-interface ControllerLed {
+export interface ControllerLed {
+    name?: string;
     byteIndex: number;
     bitIndex: number;
 }
@@ -45,6 +46,12 @@ export class ProfileComponent implements OnInit {
             y: 194,
             class: 'small',
             controllerButtons: [{ buttonNumber: 0 }],
+            controllerLeds: [
+                {
+                    byteIndex: 1,
+                    bitIndex: 0,
+                },
+            ],
         },
         {
             name: 'AP NAV',
@@ -52,6 +59,12 @@ export class ProfileComponent implements OnInit {
             y: 194,
             class: 'small',
             controllerButtons: [{ buttonNumber: 1 }],
+            controllerLeds: [
+                {
+                    byteIndex: 1,
+                    bitIndex: 1,
+                },
+            ],
         },
         {
             name: 'AP APR',
@@ -59,6 +72,12 @@ export class ProfileComponent implements OnInit {
             y: 194,
             class: 'small',
             controllerButtons: [{ buttonNumber: 2 }],
+            controllerLeds: [
+                {
+                    byteIndex: 1,
+                    bitIndex: 2,
+                },
+            ],
         },
         {
             name: 'AP REV',
@@ -66,6 +85,12 @@ export class ProfileComponent implements OnInit {
             y: 194,
             class: 'small',
             controllerButtons: [{ buttonNumber: 3 }],
+            controllerLeds: [
+                {
+                    byteIndex: 1,
+                    bitIndex: 3,
+                },
+            ],
         },
         {
             name: 'AP ALT',
@@ -73,6 +98,12 @@ export class ProfileComponent implements OnInit {
             y: 194,
             class: 'small',
             controllerButtons: [{ buttonNumber: 4 }],
+            controllerLeds: [
+                {
+                    byteIndex: 1,
+                    bitIndex: 4,
+                },
+            ],
         },
         {
             name: 'AP VS',
@@ -80,6 +111,12 @@ export class ProfileComponent implements OnInit {
             y: 194,
             class: 'small',
             controllerButtons: [{ buttonNumber: 5 }],
+            controllerLeds: [
+                {
+                    byteIndex: 1,
+                    bitIndex: 5,
+                },
+            ],
         },
         {
             name: 'AP IAS',
@@ -87,6 +124,12 @@ export class ProfileComponent implements OnInit {
             y: 194,
             class: 'small',
             controllerButtons: [{ buttonNumber: 6 }],
+            controllerLeds: [
+                {
+                    byteIndex: 1,
+                    bitIndex: 6,
+                },
+            ],
         },
         {
             name: 'FCU',
@@ -119,6 +162,12 @@ export class ProfileComponent implements OnInit {
             h: 38,
             r: 10,
             controllerButtons: [{ buttonNumber: 7 }],
+            controllerLeds: [
+                {
+                    byteIndex: 1,
+                    bitIndex: 7,
+                },
+            ],
         },
         {
             name: 'Gear',
@@ -284,31 +333,56 @@ export class ProfileComponent implements OnInit {
             controllerButtons: [{ name: 'Detent', buttonNumber: 32 }],
         },
         {
+            name: 'Led MASTER',
+            x: 100,
+            y: 100,
+            class: 'led',
+            controllerLeds: [
+                {
+                    byteIndex: 0,
+                    bitIndex: 0,
+                },
+            ],
+        },
+        {
             name: 'Led Warning',
             x: 202,
             y: 347,
             class: 'led',
-            controllerLed: {
-                byteIndex: 2,
-                bitIndex: 6,
-            },
+            controllerLeds: [
+                {
+                    byteIndex: 2,
+                    bitIndex: 6,
+                },
+            ],
         },
-        { name: 'Led Caution', x: 202, y: 363, class: 'led' },
-        { name: 'Led Engine Fire', x: 232, y: 347, class: 'led' },
-        { name: 'Led Vacuum', x: 232, y: 363, class: 'led' },
-        { name: 'Led Low Oil Pressure', x: 262, y: 347, class: 'led' },
-        { name: 'Led Low Hyd Pressure', x: 262, y: 363, class: 'led' },
-        { name: 'Led Low Fuel Pressure', x: 292, y: 347, class: 'led' },
-        { name: 'Led Aux Fuel Pump', x: 292, y: 363, class: 'led' },
-        { name: 'Led Anti Ice', x: 322, y: 347, class: 'led' },
-        { name: 'Led Parking Brake', x: 322, y: 363, class: 'led' },
-        { name: 'Led Starter Engaged', x: 352, y: 347, class: 'led' },
-        { name: 'Led Low Volts', x: 352, y: 363, class: 'led' },
-        { name: 'Led Apu', x: 382, y: 347, class: 'led' },
-        { name: 'Led Door', x: 382, y: 363, class: 'led' },
-        { name: 'Led Gear Top', x: 88, y: 204, w: 34, h: 22, r: 5 },
-        { name: 'Led Gear Left', x: 74, y: 234, w: 26, h: 28, r: 5 },
-        { name: 'Led Gear Right', x: 112, y: 234, w: 26, h: 28, r: 5 },
+        { name: 'Caution', x: 202, y: 363, class: 'led' },
+        { name: 'Engine Fire', x: 232, y: 347, class: 'led' },
+        { name: 'Vacuum', x: 232, y: 363, class: 'led' },
+        { name: 'Low Oil Pressure', x: 262, y: 347, class: 'led' },
+        { name: 'Low Hyd Pressure', x: 262, y: 363, class: 'led' },
+        { name: 'Low Fuel Pressure', x: 292, y: 347, class: 'led' },
+        { name: 'Aux Fuel Pump', x: 292, y: 363, class: 'led' },
+        { name: 'Anti Ice', x: 322, y: 347, class: 'led' },
+        { name: 'Parking Brake', x: 322, y: 363, class: 'led' },
+        { name: 'Starter Engaged', x: 352, y: 347, class: 'led' },
+        { name: 'Low Volts', x: 352, y: 363, class: 'led' },
+        { name: 'Apu', x: 382, y: 347, class: 'led' },
+        { name: 'Door', x: 382, y: 363, class: 'led' },
+        { name: 'Gear Top', x: 88, y: 204, w: 34, h: 22, r: 5 },
+        {
+            name: 'Gear Left',
+            x: 74,
+            y: 234,
+            w: 26,
+            h: 28,
+            r: 5,
+            controllerLeds: [
+                { name: 'Green', byteIndex: 2, bitIndex: 0 },
+                { name: 'Red', byteIndex: 2, bitIndex: 1 },
+            ],
+        },
+        { name: 'Gear Right', x: 112, y: 234, w: 26, h: 28, r: 5 },
     ];
 
     ngOnInit() {
