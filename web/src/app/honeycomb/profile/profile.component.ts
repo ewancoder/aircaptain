@@ -333,10 +333,12 @@ export class ProfileComponent implements OnInit {
             controllerButtons: [{ name: 'Detent', buttonNumber: 32 }],
         },
         {
-            name: 'Led MASTER',
-            x: 100,
-            y: 100,
-            class: 'led',
+            name: 'Led MASTER (When ALL lights should be working)',
+            x: 300,
+            y: 120,
+            h: 80,
+            w: 400,
+            r: 10,
             controllerLeds: [
                 {
                     byteIndex: 0,
@@ -356,20 +358,174 @@ export class ProfileComponent implements OnInit {
                 },
             ],
         },
-        { name: 'Caution', x: 202, y: 363, class: 'led' },
-        { name: 'Engine Fire', x: 232, y: 347, class: 'led' },
-        { name: 'Vacuum', x: 232, y: 363, class: 'led' },
-        { name: 'Low Oil Pressure', x: 262, y: 347, class: 'led' },
-        { name: 'Low Hyd Pressure', x: 262, y: 363, class: 'led' },
-        { name: 'Low Fuel Pressure', x: 292, y: 347, class: 'led' },
-        { name: 'Aux Fuel Pump', x: 292, y: 363, class: 'led' },
-        { name: 'Anti Ice', x: 322, y: 347, class: 'led' },
-        { name: 'Parking Brake', x: 322, y: 363, class: 'led' },
-        { name: 'Starter Engaged', x: 352, y: 347, class: 'led' },
-        { name: 'Low Volts', x: 352, y: 363, class: 'led' },
-        { name: 'Apu', x: 382, y: 347, class: 'led' },
-        { name: 'Door', x: 382, y: 363, class: 'led' },
-        { name: 'Gear Top', x: 88, y: 204, w: 34, h: 22, r: 5 },
+        {
+            name: 'Caution',
+            x: 202,
+            y: 363,
+            class: 'led',
+            controllerLeds: [
+                {
+                    byteIndex: 3,
+                    bitIndex: 5,
+                },
+            ],
+        },
+        {
+            name: 'Engine Fire',
+            x: 232,
+            y: 347,
+            class: 'led',
+            controllerLeds: [
+                {
+                    byteIndex: 2,
+                    bitIndex: 7,
+                },
+            ],
+        },
+        {
+            name: 'Vacuum',
+            x: 232,
+            y: 363,
+            class: 'led',
+            controllerLeds: [
+                {
+                    byteIndex: 3,
+                    bitIndex: 6,
+                },
+            ],
+        },
+        {
+            name: 'Low Oil Pressure',
+            x: 262,
+            y: 347,
+            class: 'led',
+            controllerLeds: [
+                {
+                    byteIndex: 3,
+                    bitIndex: 0,
+                },
+            ],
+        },
+        {
+            name: 'Low Hyd Pressure',
+            x: 262,
+            y: 363,
+            class: 'led',
+            controllerLeds: [
+                {
+                    byteIndex: 3,
+                    bitIndex: 7,
+                },
+            ],
+        },
+        {
+            name: 'Low Fuel Pressure',
+            x: 292,
+            y: 347,
+            class: 'led',
+            controllerLeds: [
+                {
+                    byteIndex: 3,
+                    bitIndex: 1,
+                },
+            ],
+        },
+        {
+            name: 'Aux Fuel Pump',
+            x: 292,
+            y: 363,
+            class: 'led',
+            controllerLeds: [
+                {
+                    byteIndex: 4,
+                    bitIndex: 0,
+                },
+            ],
+        },
+        {
+            name: 'Anti Ice',
+            x: 322,
+            y: 347,
+            class: 'led',
+            controllerLeds: [
+                {
+                    byteIndex: 3,
+                    bitIndex: 2,
+                },
+            ],
+        },
+        {
+            name: 'Parking Brake',
+            x: 322,
+            y: 363,
+            class: 'led',
+            controllerLeds: [
+                {
+                    byteIndex: 4,
+                    bitIndex: 1,
+                },
+            ],
+        },
+        {
+            name: 'Starter Engaged',
+            x: 352,
+            y: 347,
+            class: 'led',
+            controllerLeds: [
+                {
+                    byteIndex: 3,
+                    bitIndex: 3,
+                },
+            ],
+        },
+        {
+            name: 'Low Volts',
+            x: 352,
+            y: 363,
+            class: 'led',
+            controllerLeds: [
+                {
+                    byteIndex: 4,
+                    bitIndex: 2,
+                },
+            ],
+        },
+        {
+            name: 'Apu',
+            x: 382,
+            y: 347,
+            class: 'led',
+            controllerLeds: [
+                {
+                    byteIndex: 3,
+                    bitIndex: 4,
+                },
+            ],
+        },
+        {
+            name: 'Door',
+            x: 382,
+            y: 363,
+            class: 'led',
+            controllerLeds: [
+                {
+                    byteIndex: 4,
+                    bitIndex: 3,
+                },
+            ],
+        },
+        {
+            name: 'Gear Top',
+            x: 88,
+            y: 204,
+            w: 34,
+            h: 22,
+            r: 5,
+            controllerLeds: [
+                { name: 'Green', byteIndex: 2, bitIndex: 2 },
+                { name: 'Red', byteIndex: 2, bitIndex: 3 },
+            ],
+        },
         {
             name: 'Gear Left',
             x: 74,
@@ -382,7 +538,18 @@ export class ProfileComponent implements OnInit {
                 { name: 'Red', byteIndex: 2, bitIndex: 1 },
             ],
         },
-        { name: 'Gear Right', x: 112, y: 234, w: 26, h: 28, r: 5 },
+        {
+            name: 'Gear Right',
+            x: 112,
+            y: 234,
+            w: 26,
+            h: 28,
+            r: 5,
+            controllerLeds: [
+                { name: 'Green', byteIndex: 2, bitIndex: 4 },
+                { name: 'Red', byteIndex: 2, bitIndex: 5 },
+            ],
+        },
     ];
 
     ngOnInit() {
