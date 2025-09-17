@@ -597,7 +597,7 @@ export class ProfileComponent implements OnInit {
         }
     }
 
-    ngAfterViewInit() {
+    /*ngAfterViewInit() {
         // Log coordinates for debugging.
         this.svg.nativeElement.addEventListener('mousemove', (evt) => {
             const pt = this.svg.nativeElement.createSVGPoint();
@@ -606,5 +606,5 @@ export class ProfileComponent implements OnInit {
             const svgCoords = pt.matrixTransform(this.svg.nativeElement.getScreenCTM()?.inverse());
             console.log(`x=${svgCoords.x.toFixed(1)}, y=${svgCoords.y.toFixed(1)}`);
         });
-    }
+    }*/
 }
