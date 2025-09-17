@@ -37,12 +37,12 @@ export class HoneycombComponent {
     load() {
         const content = this.input.nativeElement.value;
         const object = JSON.parse(content) as Root;
-        console.log('Before normalization', object);
+        this.profiles = object.profiles;
+        console.log('Before normalization', JSON.stringify(this.profiles));
         for (const profile of object.profiles) {
             this.normalize(profile);
         }
-        console.log('After normalization', object);
-        this.profiles = object.profiles;
+        console.log('After normalization', JSON.stringify(this.profiles));
         this.currentProfile = this.profiles[0];
     }
 
