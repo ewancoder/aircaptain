@@ -60,20 +60,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Check TODOs
-        run: |
-          CURRENT_SHA=$(git rev-parse HEAD)
-          echo "### Pending TODOs" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          grep --exclude-dir=.git -rniE ".*//[[:space:]]*todo|.*#[[:space:]]TODO" | while IFS= read -r line; do
-            FILE=$(echo $line | awk -F: '{ print $1 }')
-            LINE_NUMBER=$(echo $line | awk -F: '{ print $2 }')
-            TODO=$(echo $line | awk -F: '{for(i=3;i<=NF;i++) printf "%s%s", $i, (i<NF ? ":" : "")}' | awk '{$1=$1; print}')
-            echo "- \`$TODO\`" >> $GITHUB_STEP_SUMMARY
-            echo "  > [$FILE](https://github.com/${{ github.repository }}/blob/$CURRENT_SHA/$FILE#L$LINE_NUMBER)" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-          done
-          todos=$(grep --exclude-dir=.git -rniE ".*//[[:space:]]*todo|.*#[[:space:]]TODO" | wc -l)
-          echo TODOS_COUNT=$todos >> $GITHUB_ENV
+        run: ./.github/scripts/list-todos.sh
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
 
       # TODO: Consider adding icon/logo here.
       - name: Create TODOs badge
