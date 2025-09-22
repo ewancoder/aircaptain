@@ -3,10 +3,10 @@ name: Deploy
 on:
   push:
     branches:
-      - 'main'
-      - 'develop'
+      - "main"
+      - "develop"
     tags:
-      - 'v*'
+      - "v*"
 
 env:
   PROJECT_NAME: aircaptain
@@ -18,11 +18,11 @@ env:
   BADGE_GIST_ID: 0184962696ef0364be7a3f491133f2f9
   REPO_USER: ewancoder
   CHECK_FETCH_DEPTH: 30
-  DOTNET_VERSION: '9.0.x'
+  DOTNET_VERSION: "9.0.x"
 
 jobs:
-  check-changed-files:
-    name: Check changed files
+  check-changes:
+    name: Check changes
     runs-on: ubuntu-latest
     outputs:
       web_changed: ${{ steps.filter.outputs.web }}
@@ -38,66 +38,15 @@ jobs:
         with:
           fetch-depth: ${{ env.CHECK_FETCH_DEPTH }}
 
-      # TODO: Filter out CURRENT deployment by deployment ID or by something, whech checking last deployment status.
-      - name: Check if files changed
+      - name: Check changes
         id: filter
-        run: |
-          BEFORE_SHA="${{ github.event.before }}"
-          CURRENT_SHA=$(git rev-parse HEAD)
-          echo "Checking files:"
-          echo "BEFORE_SHA: $BEFORE_SHA"
-          echo "CURRENT_SHA: $CURRENT_SHA"
-          
-          BRANCH=$(echo "${{ github.ref }}" | sed 's#refs/heads/##')
-          LAST_RUN=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            "${{ github.api_url }}/repos/${{ github.repository }}/actions/runs?status=completed&branch=$BRANCH&per_page=2")
-          LAST_CONCLUSION=$(echo "$LAST_RUN" | jq -r '.workflow_runs | sort_by(.created_at) | reverse | .[0].conclusion')
-          echo "Checking branch $BRANCH deployments"
-          echo "Conclusion is: $LAST_CONCLUSION"
-          echo "GitHub data: $LAST_RUN"
-          if [ "$LAST_CONCLUSION" != "null" ] && [ "$LAST_CONCLUSION" != "success" ]; then
-            echo "Last run failed on the current branch. Deploying everything."
-            echo "web=true" >> $GITHUB_OUTPUT
-            echo "api=true" >> $GITHUB_OUTPUT
-            echo "db=true" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-          
-          if [ "$BEFORE_SHA" == "0000000000000000000000000000000000000000" ] || [ -z "$BEFORE_SHA" ]; then
-            echo "First time push. Deploying everything."
-            echo "web=true" >> $GITHUB_OUTPUT
-            echo "api=true" >> $GITHUB_OUTPUT
-            echo "db=true" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-          if ! git diff --name-only $BEFORE_SHA HEAD > diff; then
-            echo "Git diff failed, falling back to deployment. Deploying everything."
-            echo "web=true" >> $GITHUB_OUTPUT
-            echo "api=true" >> $GITHUB_OUTPUT
-            echo "db=true" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-          if grep -qE '^(.github/workflows)|(docker-compose)|(.env)|(swarm-compose)' diff; then
-            echo "Github deploy.yml has changed, deploying everything."
-            echo "web=true" >> $GITHUB_OUTPUT
-            echo "api=true" >> $GITHUB_OUTPUT
-            echo "db=true" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-
-          if grep -q '^web/' diff; then
-            echo "Frontend files changed. Deploying web."
-            echo "web=true" >> $GITHUB_OUTPUT
-          fi
-          if grep -q '^api/' diff; then
-            echo "Backend files changed. Deploying api."
-            echo "api=true" >> $GITHUB_OUTPUT
-          fi
-          if grep -q '^db/' diff; then
-            echo "DB files changed. Deploying database."
-            echo "db=true" >> $GITHUB_OUTPUT
-          fi
+        run: ./.github/scripts/check-changes.sh web api db
+        env:
+          PREVIOUS_SHA: ${{ github.event.before }}
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_API_URL: ${{ github.api_url }}
 
   generate-todos:
     name: Check TODOs
@@ -135,13 +84,13 @@ jobs:
           filename: ${{ env.PROJECT_NAME }}-todos-${{ github.ref_name }}.json
           label: TODOs
           message: ${{ env.TODOS_COUNT }}
-          color: '#7dcbff'
+          color: "#7dcbff"
 
   test-api:
     name: Test API
     runs-on: ubuntu-latest
-    needs: check-changed-files
-    if: needs.check-changed-files.outputs.api_changed == 'true'
+    needs: check-changes
+    if: needs.check-changes.outputs.api_changed == 'true'
 
     permissions:
       contents: read
@@ -162,24 +111,24 @@ jobs:
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
-        if: '!cancelled()'
+        if: "!cancelled()"
         with:
           name: api-test-results
           path: api/tests/
 
       - name: Create coverage report
         uses: irongut/CodeCoverageSummary@v1.3.0
-        if: '!cancelled()'
+        if: "!cancelled()"
         with:
-          filename: 'api/tests/*/coverage.cobertura.xml'
+          filename: "api/tests/*/coverage.cobertura.xml"
           badge: true
-          format: 'markdown'
-          output: 'both'
+          format: "markdown"
+          output: "both"
           fail_below_min: true
-          thresholds: '0 80'
+          thresholds: "0 80"
 
       - name: Write coverage report to job summary
-        if: '!cancelled()'
+        if: "!cancelled()"
         run: |
           cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
           echo COVERAGE=$(cat code-coverage-results.md | awk -F'|' '{print $2}' | sed -n 's/.*\*\*\([0-9]*\)%.*/\1/p') >> $GITHUB_ENV
@@ -187,7 +136,7 @@ jobs:
       # TODO: Consider adding icon/logo here.
       - name: Create coverage badge
         uses: schneegans/dynamic-badges-action@v1.7.0
-        if: '!cancelled()'
+        if: "!cancelled()"
         with:
           auth: ${{ secrets.GIST_SECRET }}
           gistID: ${{ env.BADGE_GIST_ID }}
@@ -242,7 +191,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: 17
-          distribution: 'zulu'
+          distribution: "zulu"
 
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -342,8 +291,8 @@ jobs:
   test-web:
     name: Test Web
     runs-on: ubuntu-latest
-    needs: check-changed-files
-    if: needs.check-changed-files.outputs.web_changed == 'true'
+    needs: check-changes
+    if: needs.check-changes.outputs.web_changed == 'true'
 
     permissions:
       contents: read
@@ -361,7 +310,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: latest
-          cache: 'pnpm'
+          cache: "pnpm"
           cache-dependency-path: web/pnpm-lock.yaml
 
       - name: Install dependencies
@@ -373,7 +322,7 @@ jobs:
         working-directory: web
 
       - name: Write coverage report to job summary
-        if: '!cancelled()'
+        if: "!cancelled()"
         run: |
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           cat coverage/coverage.txt >> $GITHUB_STEP_SUMMARY
@@ -384,7 +333,7 @@ jobs:
       # TODO: Consider adding icon/logo here.
       - name: Create coverage badge
         uses: schneegans/dynamic-badges-action@v1.7.0
-        if: '!cancelled()'
+        if: "!cancelled()"
         with:
           auth: ${{ secrets.GIST_SECRET }}
           gistID: ${{ env.BADGE_GIST_ID }}
@@ -416,7 +365,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: latest
-          cache: 'pnpm'
+          cache: "pnpm"
           cache-dependency-path: web/pnpm-lock.yaml
 
       - name: Install dependencies
@@ -524,15 +473,15 @@ jobs:
   deploy:
     name: Deploy production
     runs-on: ubuntu-latest
-    needs: [check-changed-files, build-api, build-web]
+    needs: [check-changes, build-api, build-web]
     if: |
       false &&
       always() && !cancelled() && !failure() &&
       (github.ref == 'refs/heads/main' || (startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, '-'))) &&
       (
-        needs.check-changed-files.outputs.api_changed == 'true' ||
-        needs.check-changed-files.outputs.web_changed == 'true' ||
-        needs.check-changed-files.outputs.db_changed == 'true'
+        needs.check-changes.outputs.api_changed == 'true' ||
+        needs.check-changes.outputs.web_changed == 'true' ||
+        needs.check-changes.outputs.db_changed == 'true'
       )
 
     permissions:
@@ -556,7 +505,7 @@ jobs:
       - name: Deploy to DO
         uses: appleboy/ssh-action@v1.0.3
         env:
-          DB_CHANGED: ${{ needs.check-changed-files.outputs.db_changed }}
+          DB_CHANGED: ${{ needs.check-changes.outputs.db_changed }}
           API_SHA_TAG: ${{ needs.build-api.outputs.sha }}
           WEB_SHA_TAG: ${{ needs.build-web.outputs.sha }}
           PROJECT_NAME: ${{ env.PROJECT_NAME }}
@@ -616,14 +565,14 @@ jobs:
   deploy-swarm:
     name: Deploy production to Swarm cluster
     runs-on: ubuntu-latest
-    needs: [check-changed-files, build-api, build-web]
+    needs: [check-changes, build-api, build-web]
     if: |
       always() && !cancelled() && !failure() &&
       (github.ref == 'refs/heads/main' || (startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, '-'))) &&
       (
-        needs.check-changed-files.outputs.api_changed == 'true' ||
-        needs.check-changed-files.outputs.web_changed == 'true' ||
-        needs.check-changed-files.outputs.db_changed == 'true'
+        needs.check-changes.outputs.api_changed == 'true' ||
+        needs.check-changes.outputs.web_changed == 'true' ||
+        needs.check-changes.outputs.db_changed == 'true'
       )
 
     permissions:
@@ -647,7 +596,7 @@ jobs:
       - name: Deploy to DO
         uses: appleboy/ssh-action@v1.0.3
         env:
-          DB_CHANGED: ${{ needs.check-changed-files.outputs.db_changed }}
+          DB_CHANGED: ${{ needs.check-changes.outputs.db_changed }}
           API_SHA_TAG: ${{ needs.build-api.outputs.sha }}
           WEB_SHA_TAG: ${{ needs.build-web.outputs.sha }}
           PROJECT_NAME: ${{ env.PROJECT_NAME }}
@@ -713,14 +662,14 @@ jobs:
   deploy-develop:
     name: Deploy development
     runs-on: ubuntu-latest
-    needs: [check-changed-files, build-api, build-web]
+    needs: [check-changes, build-api, build-web]
     if: |
       always() && !cancelled() && !failure() &&
       github.ref == 'refs/heads/develop' &&
       (
-        needs.check-changed-files.outputs.api_changed == 'true' ||
-        needs.check-changed-files.outputs.web_changed == 'true' ||
-        needs.check-changed-files.outputs.db_changed == 'true'
+        needs.check-changes.outputs.api_changed == 'true' ||
+        needs.check-changes.outputs.web_changed == 'true' ||
+        needs.check-changes.outputs.db_changed == 'true'
       )
 
     permissions:
@@ -744,7 +693,7 @@ jobs:
       - name: Deploy to DEV server
         uses: appleboy/ssh-action@v1.0.3
         env:
-          DB_CHANGED: ${{ needs.check-changed-files.outputs.db_changed }}
+          DB_CHANGED: ${{ needs.check-changes.outputs.db_changed }}
           API_SHA_TAG: ${{ needs.build-api.outputs.sha }}
           WEB_SHA_TAG: ${{ needs.build-web.outputs.sha }}
           PROJECT_NAME: ${{ env.PROJECT_NAME }}
@@ -805,15 +754,15 @@ jobs:
   deploy-develop-swarm:
     name: Deploy development in Swarm mode
     runs-on: ubuntu-latest
-    needs: [check-changed-files, build-api, build-web]
+    needs: [check-changes, build-api, build-web]
     if: |
       false &&
       always() && !cancelled() && !failure() &&
       github.ref == 'refs/heads/develop' &&
       (
-        needs.check-changed-files.outputs.api_changed == 'true' ||
-        needs.check-changed-files.outputs.web_changed == 'true' ||
-        needs.check-changed-files.outputs.db_changed == 'true'
+        needs.check-changes.outputs.api_changed == 'true' ||
+        needs.check-changes.outputs.web_changed == 'true' ||
+        needs.check-changes.outputs.db_changed == 'true'
       )
 
     permissions:
@@ -837,7 +786,7 @@ jobs:
       - name: Deploy to DEV
         uses: appleboy/ssh-action@v1.0.3
         env:
-          DB_CHANGED: ${{ needs.check-changed-files.outputs.db_changed }}
+          DB_CHANGED: ${{ needs.check-changes.outputs.db_changed }}
           API_SHA_TAG: ${{ needs.build-api.outputs.sha }}
           WEB_SHA_TAG: ${{ needs.build-web.outputs.sha }}
           PROJECT_NAME: ${{ env.PROJECT_NAME }}
