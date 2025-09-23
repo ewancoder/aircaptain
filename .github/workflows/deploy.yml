@@ -89,6 +89,7 @@ jobs:
         uses: ./.github/actions/test-dotnet
         with:
           folder: api
+          coverageId: ${{ env.API_IMAGE }}
           gistSecret: ${{ secrets.GIST_SECRET }}
 
   test-api-mutation:
