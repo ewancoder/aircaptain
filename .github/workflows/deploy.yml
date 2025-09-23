@@ -386,67 +386,26 @@ jobs:
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           source: "db,docker-compose.yml,.env.prod"
-          target: /tmp/${{ env.PROJECT_NAME }}
+          target: /tmp/${{ env.PROJECT_NAME }}_prod
 
       - name: Deploy to DO
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.2
         env:
           DB_CHANGED: ${{ needs.check-changes.outputs.db_changed }}
           API_SHA_TAG: ${{ needs.build-api.outputs.sha }}
           WEB_SHA_TAG: ${{ needs.build-web.outputs.sha }}
           PROJECT_NAME: ${{ env.PROJECT_NAME }}
+          DEPLOYMENT_ENVIRONMENT: prod
+          DEPLOYMENT_IS_PRODUCTION: true
+          IS_SWARM: false
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           passphrase: ${{ secrets.PASSWORD }}
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
-          envs: DB_CHANGED,API_SHA_TAG,WEB_SHA_TAG,PROJECT_NAME
-          script: |
-            echo "DB_CHANGED: $DB_CHANGED"
-            echo "API_SHA_TAG: $API_SHA_TAG"
-            echo "WEB_SHA_TAG: $WEB_SHA_TAG"
-            echo "PROJECT_NAME: $PROJECT_NAME"
-            cd /tmp/$PROJECT_NAME
-            mv .env.prod .env
-            sed -i "s/API_TAG=/API_TAG=$API_SHA_TAG/g" .env
-            sed -i "s/WEB_TAG=/WEB_TAG=$WEB_SHA_TAG/g" .env
-            sed -i '/ports:/{N;d}' docker-compose.yml
-            DEPLOY_SERVICES=$(docker compose config --services)
-            if [ -z $API_SHA_TAG ]; then
-              echo "API will not be deployed."
-              DEPLOY_SERVICES=$(echo $DEPLOY_SERVICES | tr ' ' '\n' | grep -v '^api$' | tr '\n' ' ')
-            fi
-            if [ -z $WEB_SHA_TAG ]; then
-              echo "WEB will not be deployed."
-              DEPLOY_SERVICES=$(echo $DEPLOY_SERVICES | tr ' ' '\n' | grep -v '^web$' | tr '\n' ' ')
-            fi
-            docker compose pull
-            docker compose up -d postgres
-            if [ "$DB_CHANGED" == "true" ]; then
-              echo "Database has changed, deploying it."
-              NETWORK_NAME=$(docker compose config --format json | jq -r '.networks["local"].name')
-              docker compose stop api
-              docker run --rm \
-                --network $NETWORK_NAME \
-                -v /tmp/$PROJECT_NAME/db/migrations:/db/migrations \
-                --env-file /data/$PROJECT_NAME/secrets.env \
-                amacneil/dbmate:latest --wait up
-              if [ $? -ne 0 ]; then
-                echo "Migration failed, restarting old api containers"
-                docker compose start api
-                exit 1
-              fi
-            fi
-            if [ -z $API_SHA_TAG ]; then
-              echo "API is not being deployed, restarting old container."
-              docker compose start api
-            fi
-            echo "Deploying the following services: $DEPLOY_SERVICES"
-            docker compose up -d $DEPLOY_SERVICES
-            docker compose cp .env doneman:/.env
-            docker compose cp docker-compose.yml doneman:/docker-compose.yml
-            docker compose restart doneman
+          envs: DB_CHANGED,API_SHA_TAG,WEB_SHA_TAG,PROJECT_NAME,DEPLOYMENT_ENVIRONMENT,DEPLOYMENT_IS_PRODUCTION,IS_SWARM
+          script_path: .github/scripts/deploy.sh
 
   deploy-swarm:
     name: Deploy production to Swarm cluster
@@ -477,73 +436,26 @@ jobs:
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           source: "db,swarm-compose.yml,.env.prod"
-          target: /tmp/${{ env.PROJECT_NAME }}
+          target: /tmp/${{ env.PROJECT_NAME }}_prod
 
       - name: Deploy to DO
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.2
         env:
           DB_CHANGED: ${{ needs.check-changes.outputs.db_changed }}
           API_SHA_TAG: ${{ needs.build-api.outputs.sha }}
           WEB_SHA_TAG: ${{ needs.build-web.outputs.sha }}
           PROJECT_NAME: ${{ env.PROJECT_NAME }}
+          DEPLOYMENT_ENVIRONMENT: prod
+          DEPLOYMENT_IS_PRODUCTION: true
+          IS_SWARM: true
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           passphrase: ${{ secrets.PASSWORD }}
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
-          envs: DB_CHANGED,API_SHA_TAG,WEB_SHA_TAG,PROJECT_NAME
-          script: |
-            echo "DB_CHANGED: $DB_CHANGED"
-            echo "API_SHA_TAG: $API_SHA_TAG"
-            echo "WEB_SHA_TAG: $WEB_SHA_TAG"
-            echo "PROJECT_NAME: $PROJECT_NAME"
-            cd /tmp/$PROJECT_NAME
-            mv .env.prod .env
-            if [ -z $API_SHA_TAG ]; then
-              API_SHA_TAG=$(docker service inspect aircaptain_api --pretty | grep image= | awk -F: '{print $2}')
-              echo "API did not change. Using $API_SHA_TAG tag."
-            fi
-            if [ -z $WEB_SHA_TAG ]; then
-              WEB_SHA_TAG=$(docker service inspect aircaptain_web --pretty | grep image= | awk -F: '{print $2}')
-              echo "WEB did not change. Using $WEB_SHA_TAG tag."
-            fi
-            sed -i "s/API_TAG=/API_TAG=$API_SHA_TAG/g" .env
-            sed -i "s/WEB_TAG=/WEB_TAG=$WEB_SHA_TAG/g" .env
-            sed -i '/ports:/{N;d}' swarm-compose.yml
-            export $(cat .env | xargs)
-            echo "Redeploying the stack"
-            # TODO: Do this only for first time deployment, otherwise do this only after DB deployment.
-            # We cannot call this twice during a deployment, or we need to wait till the first deployment finishes
-            #docker stack deploy aircaptain --compose-file swarm-compose.yml --detach=false
-            if [ "$DB_CHANGED" == "true" ]; then
-              echo "Database has changed, deploying it."
-              NETWORK_NAME=$(docker compose -f swarm-compose.yml config --format json | jq -r '.networks["local"].name')
-              #docker compose stop api
-              docker run --rm \
-                --network $NETWORK_NAME \
-                -v /tmp/$PROJECT_NAME/db/migrations:/db/migrations \
-                --env-file /data/$PROJECT_NAME/secrets.env \
-                amacneil/dbmate:latest --wait up
-              if [ $? -ne 0 ]; then
-                echo "Migration failed, restarting old api containers"
-                # TODO: Rescale old services, do not update it.
-                docker stack deploy aircaptain --compose-file swarm-compose.yml --detach=false
-                #docker compose start api
-                exit 1
-              fi
-            fi
-            #if [ -z $API_SHA_TAG ]; then
-            #  echo "API is not being deployed, restarting old container."
-            #  docker compose start api
-            #fi
-            #echo "Deploying the following services: $DEPLOY_SERVICES"
-            #docker compose up -d $DEPLOY_SERVICES
-            #docker compose cp .env doneman:/.env
-            #docker compose cp docker-compose.yml doneman:/docker-compose.yml
-            #docker compose restart doneman
-            echo "Redeploying the stack"
-            docker stack deploy aircaptain --compose-file swarm-compose.yml --detach=false
+          envs: DB_CHANGED,API_SHA_TAG,WEB_SHA_TAG,PROJECT_NAME,DEPLOYMENT_ENVIRONMENT,DEPLOYMENT_IS_PRODUCTION,IS_SWARM
+          script_path: .github/scripts/deploy.sh
 
   deploy-develop:
     name: Deploy development
@@ -574,68 +486,26 @@ jobs:
           key: ${{ secrets.KEY_DEV }}
           port: ${{ secrets.PORT_DEV }}
           source: "db,docker-compose.yml,.env.dev"
-          target: /tmp/dev-${{ env.PROJECT_NAME }}
+          target: /tmp/${{ env.PROJECT_NAME }}_dev
 
       - name: Deploy to DEV server
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.2
         env:
           DB_CHANGED: ${{ needs.check-changes.outputs.db_changed }}
           API_SHA_TAG: ${{ needs.build-api.outputs.sha }}
           WEB_SHA_TAG: ${{ needs.build-web.outputs.sha }}
           PROJECT_NAME: ${{ env.PROJECT_NAME }}
+          DEPLOYMENT_ENVIRONMENT: dev
+          DEPLOYMENT_IS_PRODUCTION: false
+          IS_SWARM: false
         with:
           host: ${{ secrets.HOST_DEV }}
           username: ${{ secrets.USERNAME_DEV }}
           passphrase: ${{ secrets.PASSWORD_DEV }}
           key: ${{ secrets.KEY_DEV }}
           port: ${{ secrets.PORT_DEV }}
-          envs: DB_CHANGED,API_SHA_TAG,WEB_SHA_TAG,PROJECT_NAME
-          script: |
-            echo "DB_CHANGED: $DB_CHANGED"
-            echo "API_SHA_TAG: $API_SHA_TAG"
-            echo "WEB_SHA_TAG: $WEB_SHA_TAG"
-            echo "PROJECT_NAME: $PROJECT_NAME"
-            cd /tmp/dev-$PROJECT_NAME
-            mv .env.dev .env
-            sed -i "s/API_TAG=/API_TAG=$API_SHA_TAG/g" .env
-            sed -i "s/WEB_TAG=/WEB_TAG=$WEB_SHA_TAG/g" .env
-            sed -i "s/#- admin/- admin/g" docker-compose.yml
-            sed -i "s/#- internet/- internet/g" docker-compose.yml
-            DEPLOY_SERVICES=$(docker compose config --services)
-            if [ -z $API_SHA_TAG ]; then
-              echo "API will not be deployed."
-              DEPLOY_SERVICES=$(echo $DEPLOY_SERVICES | tr ' ' '\n' | grep -v '^api$' | tr '\n' ' ')
-            fi
-            if [ -z $WEB_SHA_TAG ]; then
-              echo "WEB will not be deployed."
-              DEPLOY_SERVICES=$(echo $DEPLOY_SERVICES | tr ' ' '\n' | grep -v '^web$' | tr '\n' ' ')
-            fi
-            docker compose pull
-            docker compose up -d postgres
-            if [ "$DB_CHANGED" == "true" ]; then
-              echo "Database has changed, deploying it."
-              NETWORK_NAME=$(docker compose config --format json | jq -r '.networks["local"].name')
-              docker compose stop api
-              docker run --rm \
-                --network $NETWORK_NAME \
-                -v /tmp/dev-$PROJECT_NAME/db/migrations:/db/migrations \
-                --env-file /data/dev-$PROJECT_NAME/secrets.env \
-                amacneil/dbmate:latest --wait up
-              if [ $? -ne 0 ]; then
-                echo "Migration failed, restarting old api containers"
-                docker compose start api
-                exit 1
-              fi
-            fi
-            if [ -z $API_SHA_TAG ]; then
-              echo "API is not being deployed, restarting old container."
-              docker compose start api
-            fi
-            echo "Deploying the following services: $DEPLOY_SERVICES"
-            docker compose up -d $DEPLOY_SERVICES
-            docker compose cp .env doneman:/.env
-            docker compose cp docker-compose.yml doneman:/docker-compose.yml
-            docker compose restart doneman
+          envs: DB_CHANGED,API_SHA_TAG,WEB_SHA_TAG,PROJECT_NAME,DEPLOYMENT_ENVIRONMENT,DEPLOYMENT_IS_PRODUCTION,IS_SWARM
+          script_path: .github/scripts/deploy.sh
 
   deploy-develop-swarm:
     name: Deploy development in Swarm mode
@@ -667,71 +537,23 @@ jobs:
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           source: "db,swarm-compose.yml,.env.dev"
-          target: /tmp/dev-${{ env.PROJECT_NAME }}
+          target: /tmp/${{ env.PROJECT_NAME }}_dev
 
       - name: Deploy to DEV
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.2
         env:
           DB_CHANGED: ${{ needs.check-changes.outputs.db_changed }}
           API_SHA_TAG: ${{ needs.build-api.outputs.sha }}
           WEB_SHA_TAG: ${{ needs.build-web.outputs.sha }}
           PROJECT_NAME: ${{ env.PROJECT_NAME }}
+          DEPLOYMENT_ENVIRONMENT: dev
+          DEPLOYMENT_IS_PRODUCTION: false
+          IS_SWARM: false
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           passphrase: ${{ secrets.PASSWORD }}
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
-          envs: DB_CHANGED,API_SHA_TAG,WEB_SHA_TAG,PROJECT_NAME
-          script: |
-            echo "DB_CHANGED: $DB_CHANGED"
-            echo "API_SHA_TAG: $API_SHA_TAG"
-            echo "WEB_SHA_TAG: $WEB_SHA_TAG"
-            echo "PROJECT_NAME: $PROJECT_NAME"
-            cd /tmp/dev-$PROJECT_NAME
-            mv .env.dev .env
-            if [ -z $API_SHA_TAG ]; then
-              API_SHA_TAG=$(docker service inspect dev-aircaptain_api --pretty | grep image= | awk -F: '{print $2}')
-              echo "API did not change. Using $API_SHA_TAG tag."
-            fi
-            if [ -z $WEB_SHA_TAG ]; then
-              WEB_SHA_TAG=$(docker service inspect dev-aircaptain_web --pretty | grep image= | awk -F: '{print $2}')
-              echo "WEB did not change. Using $WEB_SHA_TAG tag."
-            fi
-            sed -i "s/API_TAG=/API_TAG=$API_SHA_TAG/g" .env
-            sed -i "s/WEB_TAG=/WEB_TAG=$WEB_SHA_TAG/g" .env
-            sed -i "s/#- admin/- admin/g" docker-compose.yml
-            sed -i "s/#- internet/- internet/g" docker-compose.yml
-            export $(cat .env | xargs)
-            echo "Redeploying the stack"
-            # TODO: Do this only for first time deployment, otherwise do this only after DB deployment.
-            # We cannot call this twice during a deployment, or we need to wait till the first deployment finishes
-            #docker stack deploy dev-aircaptain --compose-file swarm-compose.yml --detach=false
-            if [ "$DB_CHANGED" == "true" ]; then
-              echo "Database has changed, deploying it."
-              NETWORK_NAME=$(docker compose -f swarm-compose.yml config --format json | jq -r '.networks["local"].name')
-              #docker compose stop api
-              docker run --rm \
-                --network $NETWORK_NAME \
-                -v /tmp/dev-$PROJECT_NAME/db/migrations:/db/migrations \
-                --env-file /data/dev-$PROJECT_NAME/secrets.env \
-                amacneil/dbmate:latest --wait up
-              if [ $? -ne 0 ]; then
-                echo "Migration failed, restarting old api containers"
-                # TODO: Rescale old services, do not update it.
-                docker stack deploy dev-aircaptain --compose-file swarm-compose.yml --detach=false
-                #docker compose start api
-                exit 1
-              fi
-            fi
-            #if [ -z $API_SHA_TAG ]; then
-            #  echo "API is not being deployed, restarting old container."
-            #  docker compose start api
-            #fi
-            #echo "Deploying the following services: $DEPLOY_SERVICES"
-            #docker compose up -d $DEPLOY_SERVICES
-            #docker compose cp .env doneman:/.env
-            #docker compose cp docker-compose.yml doneman:/docker-compose.yml
-            #docker compose restart doneman
-            echo "Redeploying the stack"
-            docker stack deploy dev-aircaptain --compose-file swarm-compose.yml --detach=false
+          envs: DB_CHANGED,API_SHA_TAG,WEB_SHA_TAG,PROJECT_NAME,DEPLOYMENT_ENVIRONMENT,DEPLOYMENT_IS_PRODUCTION,IS_SWARM
+          script_path: .github/scripts/deploy.sh
