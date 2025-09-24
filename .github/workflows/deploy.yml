@@ -462,6 +462,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [check-changes, build-api, build-web]
     if: |
+      false &&
       always() && !cancelled() && !failure() &&
       github.ref == 'refs/heads/develop' &&
       (
@@ -512,7 +513,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [check-changes, build-api, build-web]
     if: |
-      false &&
+      true &&
       always() && !cancelled() && !failure() &&
       github.ref == 'refs/heads/develop' &&
       (
