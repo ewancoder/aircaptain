@@ -549,7 +549,7 @@ jobs:
           PROJECT_NAME: ${{ env.PROJECT_NAME }}
           DEPLOYMENT_ENVIRONMENT: dev
           DEPLOYMENT_IS_PRODUCTION: false
-          IS_SWARM: false
+          IS_SWARM: true
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}

@@ -74,8 +74,8 @@ if [[ "${DEPLOYMENT_IS_PRODUCTION}" == "true" ]]; then
     sed -i '/ports:/{N;d}' "${compose_file}" # Delete ports forwarding for production envs.
 else
     # Uncomment connection to helpful infrastructure for DEV envs.
-    sed -i "s/#- admin/- admin/g" docker-compose.yml
-    sed -i "s/#- internet/- internet/g" docker-compose.yml
+    sed -i "s/#- admin/- admin/g" "${compose_file}"
+    sed -i "s/#- internet/- internet/g" "${compose_file}"
 fi
 
 if [[ "${IS_SWARM}" != "true" ]]; then
