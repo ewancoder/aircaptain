@@ -116,7 +116,7 @@ if [[ "${IS_SWARM}" != "true" ]]; then
         docker compose start api
     fi
     echo "Deploying the following services: ${deploy_services}"
-    docker compose up -d "${deploy_services}"
+    docker compose up -d ${deploy_services} # Cannot quote this, so different services are treated as different entries.
     docker compose cp .env doneman:/.env
     docker compose cp docker-compose.yml doneman:/docker-compose.yml
     docker compose restart doneman
@@ -163,7 +163,9 @@ else
 
     echo "Deploying the stack"
     docker stack deploy "${stack_name}" --compose-file swarm-compose.yml --detach=false
-fi
 
-echo "Cleaning up the folder"
-rm -rf "/tmp/${folder}"
+    # We don't need to keep the files for Swarm deployments.
+    # But keep them for regular (in case we want to stop the stack).
+    echo "Cleaning up the folder"
+    rm -rf "/tmp/${folder}"
+fi
