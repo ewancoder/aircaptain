@@ -234,6 +234,7 @@ jobs:
     name: Web mutation testing
     runs-on: ubuntu-latest
     needs: test-web
+    if: false # Disable for now, doesn't work with Angular 20.
 
     permissions:
       contents: read
