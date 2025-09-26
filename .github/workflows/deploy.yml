@@ -292,7 +292,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [check-changes, build-api, build-web]
     if: |
-      false &&
       always() && !cancelled() && !failure() &&
       (startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, '-')) &&
       (
@@ -309,7 +308,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Copy files to server
-        uses: appleboy/scp-action@v0.1.7
+        uses: appleboy/scp-action@v1.0.0
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
@@ -328,57 +327,7 @@ jobs:
           PROJECT_NAME: ${{ env.PROJECT_NAME }}
           DEPLOYMENT_ENVIRONMENT: prod
           DEPLOYMENT_IS_PRODUCTION: true
-          IS_SWARM: false
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          passphrase: ${{ secrets.PASSWORD }}
-          key: ${{ secrets.KEY }}
-          port: ${{ secrets.PORT }}
-          envs: DB_CHANGED,API_SHA_TAG,WEB_SHA_TAG,PROJECT_NAME,DEPLOYMENT_ENVIRONMENT,DEPLOYMENT_IS_PRODUCTION,IS_SWARM
-          script_path: .github/scripts/deploy.sh
-
-  deploy-swarm:
-    name: Deploy Production Swarm
-    runs-on: ubuntu-latest
-    needs: [check-changes, build-api, build-web]
-    if: |
-      always() && !cancelled() && !failure() &&
-      (startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, '-')) &&
-      (
-        needs.check-changes.outputs.api_changed == 'true' ||
-        needs.check-changes.outputs.web_changed == 'true' ||
-        needs.check-changes.outputs.db_changed == 'true'
-      )
-
-    permissions:
-      contents: read
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Copy files to server
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          passphrase: ${{ secrets.PASSWORD }}
-          key: ${{ secrets.KEY }}
-          port: ${{ secrets.PORT }}
-          source: "db,swarm-compose.yml,.env.prod"
-          target: /tmp/${{ env.PROJECT_NAME }}_prod
-
-      - name: Deploy to DO
-        uses: appleboy/ssh-action@v1.2.2
-        env:
-          DB_CHANGED: ${{ needs.check-changes.outputs.db_changed }}
-          API_SHA_TAG: ${{ needs.build-api.outputs.sha }}
-          WEB_SHA_TAG: ${{ needs.build-web.outputs.sha }}
-          PROJECT_NAME: ${{ env.PROJECT_NAME }}
-          DEPLOYMENT_ENVIRONMENT: prod
-          DEPLOYMENT_IS_PRODUCTION: true
-          IS_SWARM: true
+          IS_SWARM: true # Change to false to switch to non-swarm mode.
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
@@ -393,7 +342,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [check-changes, build-api, build-web]
     if: |
-      false &&
       always() && !cancelled() && !failure() &&
       github.ref == 'refs/heads/develop' &&
       (
@@ -410,65 +358,14 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Copy files to server
-        uses: appleboy/scp-action@v0.1.7
+        uses: appleboy/scp-action@v1.0.0
         with:
-          host: ${{ secrets.HOST_DEV }}
-          username: ${{ secrets.USERNAME_DEV }}
-          passphrase: ${{ secrets.PASSWORD_DEV }}
-          key: ${{ secrets.KEY_DEV }}
-          port: ${{ secrets.PORT_DEV }}
-          source: "db,docker-compose.yml,.env.dev"
-          target: /tmp/${{ env.PROJECT_NAME }}_dev
-
-      - name: Deploy to DEV server
-        uses: appleboy/ssh-action@v1.2.2
-        env:
-          DB_CHANGED: ${{ needs.check-changes.outputs.db_changed }}
-          API_SHA_TAG: ${{ needs.build-api.outputs.sha }}
-          WEB_SHA_TAG: ${{ needs.build-web.outputs.sha }}
-          PROJECT_NAME: ${{ env.PROJECT_NAME }}
-          DEPLOYMENT_ENVIRONMENT: dev
-          DEPLOYMENT_IS_PRODUCTION: false
-          IS_SWARM: false
-        with:
-          host: ${{ secrets.HOST_DEV }}
-          username: ${{ secrets.USERNAME_DEV }}
-          passphrase: ${{ secrets.PASSWORD_DEV }}
-          key: ${{ secrets.KEY_DEV }}
-          port: ${{ secrets.PORT_DEV }}
-          envs: DB_CHANGED,API_SHA_TAG,WEB_SHA_TAG,PROJECT_NAME,DEPLOYMENT_ENVIRONMENT,DEPLOYMENT_IS_PRODUCTION,IS_SWARM
-          script_path: .github/scripts/deploy.sh
-
-  deploy-develop-swarm:
-    name: Deploy Development Swarm
-    runs-on: ubuntu-latest
-    needs: [check-changes, build-api, build-web]
-    if: |
-      true &&
-      always() && !cancelled() && !failure() &&
-      github.ref == 'refs/heads/develop' &&
-      (
-        needs.check-changes.outputs.api_changed == 'true' ||
-        needs.check-changes.outputs.web_changed == 'true' ||
-        needs.check-changes.outputs.db_changed == 'true'
-      )
-
-    permissions:
-      contents: read
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Copy files to server
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.HOST }}
+          host: ${{ secrets.HOST }} # Change to HOST_DEV, USERNAME_DEV etc for non-swarm mode.
           username: ${{ secrets.USERNAME }}
           passphrase: ${{ secrets.PASSWORD }}
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
-          source: "db,swarm-compose.yml,.env.dev"
+          source: "db,docker-compose.yml,.env.dev"
           target: /tmp/${{ env.PROJECT_NAME }}_dev
 
       - name: Deploy to DEV
@@ -480,7 +377,7 @@ jobs:
           PROJECT_NAME: ${{ env.PROJECT_NAME }}
           DEPLOYMENT_ENVIRONMENT: dev
           DEPLOYMENT_IS_PRODUCTION: false
-          IS_SWARM: true
+          IS_SWARM: true # Change to false to switch to non-swarm mode.
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
