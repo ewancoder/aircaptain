@@ -29,6 +29,7 @@ jobs:
       web_changed: ${{ steps.filter.outputs.web }}
       api_changed: ${{ steps.filter.outputs.api }}
       db_changed: ${{ steps.filter.outputs.db }}
+      project_name: ${{ steps.envs.outputs.project_name }}
 
     permissions:
       contents: read
@@ -48,6 +49,11 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_API_URL: ${{ github.api_url }}
+
+      # We need this hack to use env variables in the sub workflows.
+      - name: Set environment variables
+        id: envs
+        run: echo "project_name=$PROJECT_NAME" >> $GITHUB_OUTPUT
 
   generate-todos:
     name: Check TODOs
@@ -214,102 +220,29 @@ jobs:
           dockerFile: ${{ env.WEB_DOCKERFILE }}
           githubToken: ${{ secrets.GITHUB_TOKEN }}
 
-  deploy:
-    name: Deploy Production
-    runs-on: ubuntu-latest
+  deployment:
+    name: Deploy
+    uses: ./.github/workflows/deployment.yml
     needs: [check-changes, build-api, build-web]
     if: |
       always() && !cancelled() && !failure() &&
-      (startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, '-')) &&
       (
         needs.check-changes.outputs.api_changed == 'true' ||
         needs.check-changes.outputs.web_changed == 'true' ||
         needs.check-changes.outputs.db_changed == 'true'
       )
-
-    permissions:
-      contents: read
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Copy files to server
-        uses: appleboy/scp-action@v1.0.0
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          passphrase: ${{ secrets.PASSWORD }}
-          key: ${{ secrets.KEY }}
-          port: ${{ secrets.PORT }}
-          source: "db,docker-compose.yml,.env.prod"
-          target: /tmp/${{ env.PROJECT_NAME }}_prod
-
-      - name: Deploy to DO
-        uses: appleboy/ssh-action@v1.2.2
-        env:
-          DB_CHANGED: ${{ needs.check-changes.outputs.db_changed }}
-          API_SHA_TAG: ${{ needs.build-api.outputs.sha }}
-          WEB_SHA_TAG: ${{ needs.build-web.outputs.sha }}
-          PROJECT_NAME: ${{ env.PROJECT_NAME }}
-          DEPLOYMENT_ENVIRONMENT: prod
-          DEPLOYMENT_IS_PRODUCTION: true
-          IS_SWARM: true # Change to false to switch to non-swarm mode.
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          passphrase: ${{ secrets.PASSWORD }}
-          key: ${{ secrets.KEY }}
-          port: ${{ secrets.PORT }}
-          envs: DB_CHANGED,API_SHA_TAG,WEB_SHA_TAG,PROJECT_NAME,DEPLOYMENT_ENVIRONMENT,DEPLOYMENT_IS_PRODUCTION,IS_SWARM
-          script_path: .github/scripts/deploy.sh
-
-  deploy-develop:
-    name: Deploy Development
-    runs-on: ubuntu-latest
-    needs: [check-changes, build-api, build-web]
-    if: |
-      always() && !cancelled() && !failure() &&
-      github.ref == 'refs/heads/develop' &&
-      (
-        needs.check-changes.outputs.api_changed == 'true' ||
-        needs.check-changes.outputs.web_changed == 'true' ||
-        needs.check-changes.outputs.db_changed == 'true'
-      )
-
-    permissions:
-      contents: read
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Copy files to server
-        uses: appleboy/scp-action@v1.0.0
-        with:
-          host: ${{ secrets.HOST }} # Change to HOST_DEV, USERNAME_DEV etc for non-swarm mode.
-          username: ${{ secrets.USERNAME }}
-          passphrase: ${{ secrets.PASSWORD }}
-          key: ${{ secrets.KEY }}
-          port: ${{ secrets.PORT }}
-          source: "db,docker-compose.yml,.env.dev"
-          target: /tmp/${{ env.PROJECT_NAME }}_dev
-
-      - name: Deploy to DEV
-        uses: appleboy/ssh-action@v1.2.2
-        env:
-          DB_CHANGED: ${{ needs.check-changes.outputs.db_changed }}
-          API_SHA_TAG: ${{ needs.build-api.outputs.sha }}
-          WEB_SHA_TAG: ${{ needs.build-web.outputs.sha }}
-          PROJECT_NAME: ${{ env.PROJECT_NAME }}
-          DEPLOYMENT_ENVIRONMENT: dev
-          DEPLOYMENT_IS_PRODUCTION: false
-          IS_SWARM: true # Change to false to switch to non-swarm mode.
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          passphrase: ${{ secrets.PASSWORD }}
-          key: ${{ secrets.KEY }}
-          port: ${{ secrets.PORT }}
-          envs: DB_CHANGED,API_SHA_TAG,WEB_SHA_TAG,PROJECT_NAME,DEPLOYMENT_ENVIRONMENT,DEPLOYMENT_IS_PRODUCTION,IS_SWARM
-          script_path: .github/scripts/deploy.sh
+    secrets:
+      # TODO: For non-swarm Dev deployment we need to pass HOST_DEV etc here.
+      # Hence, currently we only support Swarm deployments.
+      ssh_host: ${{ secrets.HOST }}
+      ssh_port: ${{ secrets.PORT }}
+      ssh_username: ${{ secrets.USERNAME }}
+      ssh_key: ${{ secrets.KEY }}
+      ssh_key_passphrase: ${{ secrets.PASSWORD }}
+    with:
+      # TODO: Unfortunately we cannot access environment variables here.
+      # So project_name value is duplicated.
+      project_name: ${{ needs.check-changes.outputs.project_name }}
+      db_changed: ${{ needs.check-changes.outputs.db_changed }}
+      api_sha_tag: ${{ needs.build-api.outputs.sha }}
+      web_sha_tag: ${{ needs.build-web.outputs.sha }}
