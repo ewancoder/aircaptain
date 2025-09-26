@@ -75,7 +75,7 @@ services:
           - ${SWARM_INFRA_CONSTRAINT}
 
   api:
-    image: ghcr.io/ewancoder/aircaptain-api:${API_TAG}
+    image: ghcr.io/ewancoder-tyr/aircaptain-api:${API_TAG}
     volumes:
       - /root/dp.pfx:/app/dp.pfx
     restart: unless-stopped
@@ -100,7 +100,7 @@ services:
           - ${SWARM_SERVICE_CONSTRAINT}
 
   web:
-    image: ghcr.io/ewancoder/aircaptain-web:${WEB_TAG}
+    image: ghcr.io/ewancoder-tyr/aircaptain-web:${WEB_TAG}
     restart: unless-stopped
     networks:
       - public

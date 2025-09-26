@@ -17,7 +17,7 @@ env:
   WEB_DOCKERFILE: web/Dockerfile
   REGISTRY: ghcr.io
   BADGE_GIST_ID: 0184962696ef0364be7a3f491133f2f9
-  REPO_USER: ewancoder
+  REPO_USER: ewancoder-tyr
   CHECK_FETCH_DEPTH: 30
   DOTNET_VERSION: "9.0.x"
 

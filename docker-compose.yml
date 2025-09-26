@@ -30,7 +30,7 @@ services:
       - NETWORK_PATTERN=^tyr
 
   api:
-    image: ghcr.io/ewancoder/aircaptain-api:${API_TAG}
+    image: ghcr.io/ewancoder-tyr/aircaptain-api:${API_TAG}
     #container_name: ${PREFIX}aircaptain-api
     volumes:
       - /root/dp.pfx:/app/dp.pfx
@@ -95,7 +95,7 @@ services:
       #- internet # Needed for development env to expose ports to host.
 
   web:
-    image: ghcr.io/ewancoder/aircaptain-web:${WEB_TAG}
+    image: ghcr.io/ewancoder-tyr/aircaptain-web:${WEB_TAG}
     #container_name: ${PREFIX}aircaptain-web
     restart: unless-stopped
     mem_limit: 1g
