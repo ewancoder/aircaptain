@@ -24,7 +24,7 @@ echo "GITHUB_REPOSITORY: $GITHUB_REPOSITORY"
 # TODOs patterns (case-insensitive, anything before/after, any amount of spaces):
 #   - //todo, // todo
 #   - #todo, # todo
-todos_count=$(grep --exclude-dir=.git --recursive --line-number --ignore-case --extended-regexp".*//[[:space:]]*todo|.*#[[:space:]]*todo" | wc -l)
+todos_count=$(grep --exclude-dir=.git --recursive --line-number --ignore-case --extended-regexp ".*//[[:space:]]*todo|.*#[[:space:]]*todo" | wc -l)
 echo "TODOS_COUNT=$todos_count" >> "$GITHUB_ENV"
 
 echo "### Pending TODOs - ${todos_count}" >> "$GITHUB_STEP_SUMMARY"
