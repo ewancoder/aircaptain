@@ -235,11 +235,11 @@ jobs:
     secrets:
       # TODO: For non-swarm Dev deployment we need to pass HOST_DEV etc here.
       # Hence, currently we only support Swarm deployments.
-      ssh_host: ${{ secrets.HOST }}
-      ssh_port: ${{ secrets.PORT }}
-      ssh_username: ${{ secrets.USERNAME }}
-      ssh_key: ${{ secrets.KEY }}
-      ssh_key_passphrase: ${{ secrets.PASSWORD }}
+      ssh_host: ${{ secrets.SSH_HOST }}
+      ssh_port: ${{ secrets.SSH_PORT }}
+      ssh_username: ${{ secrets.SSH_USERNAME }}
+      ssh_key: ${{ secrets.SSH_KEY }}
+      ssh_key_passphrase: ${{ secrets.SSH_KEY_PASSPHRASE }}
     with:
       # TODO: Unfortunately we cannot access environment variables here.
       # So project_name value is duplicated.
