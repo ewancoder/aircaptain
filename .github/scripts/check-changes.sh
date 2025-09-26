@@ -7,7 +7,7 @@
 #   GITHUB_REPOSITORY - current github repository, "${{ github.repository }}"
 #   GITHUB_API_URL - github API url, "${{ github.api_url }}"
 #   GITHUB_REF - current branch/tag, "${{ github.ref }}"
-# This script will place module1=true module2=false etc variables into GITHUB_OUTPUT.
+# This script will place module1=true module2=false etc variables into $GITHUB_OUTPUT.
 
 # TODO: Filter out CURRENT deployment by deployment ID or by something, when checking last deployment status.
 
