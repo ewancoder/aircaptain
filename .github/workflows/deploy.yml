@@ -31,6 +31,7 @@ jobs:
       api_changed: ${{ steps.filter.outputs.api }}
       db_changed: ${{ steps.filter.outputs.db }}
       project_name: ${{ steps.envs.outputs.project_name }}
+      badge_gist_id: ${{ steps.envs.outputs.badge_gist_id }}
 
     permissions:
       contents: read
@@ -52,9 +53,12 @@ jobs:
           GITHUB_API_URL: ${{ github.api_url }}
 
       # We need this hack to use env variables in the sub workflows.
+      # And we also need to add them to the outputs of the job above.
       - name: Set environment variables
         id: envs
-        run: echo "project_name=$PROJECT_NAME" >> $GITHUB_OUTPUT
+        run: |
+          echo "project_name=$PROJECT_NAME" >> $GITHUB_OUTPUT
+          echo "badge_gist_id=$BADGE_GIST_ID" >> $GITHUB_OUTPUT
 
   generate-todos:
     name: Check TODOs
@@ -152,6 +156,19 @@ jobs:
           dockerFile: ${{ env.API_DOCKERFILE }}
           githubToken: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Get current time
+        run: echo "now=$(date -u +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
+
+      - name: Upload build info to gist
+        uses: schneegans/dynamic-badges-action@v1.7.0
+        with:
+          auth: ${{ secrets.GIST_SECRET }}
+          gistID: ${{ env.BADGE_GIST_ID }}
+          filename: ${{ env.PROJECT_NAME }}-api-build-${{ github.ref_name }}.json
+          label: API build
+          message: "${{ github.ref_name }}-${{ github.sha }}, ${{ env.now }}"
+          color: "#b685f2"
+
   test-web:
     name: Test Web
     runs-on: ubuntu-latest
@@ -223,6 +240,19 @@ jobs:
           dockerFile: ${{ env.WEB_DOCKERFILE }}
           githubToken: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Get current time
+        run: echo "now=$(date -u +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
+
+      - name: Upload build info to gist
+        uses: schneegans/dynamic-badges-action@v1.7.0
+        with:
+          auth: ${{ secrets.GIST_SECRET }}
+          gistID: ${{ env.BADGE_GIST_ID }}
+          filename: ${{ env.PROJECT_NAME }}-web-build-${{ github.ref_name }}.json
+          label: Web build
+          message: "${{ github.ref_name }}-${{ github.sha }}, ${{ env.now }}"
+          color: "#b685f2"
+
   deployment:
     name: Deploy
     uses: ./.github/workflows/deployment.yml
@@ -242,10 +272,12 @@ jobs:
       ssh_username: ${{ secrets.SSH_USERNAME }}
       ssh_key: ${{ secrets.SSH_KEY }}
       ssh_key_passphrase: ${{ secrets.SSH_KEY_PASSPHRASE }}
+      gist_secret: ${{ secrets.GIST_SECRET }}
     with:
       # TODO: Unfortunately we cannot access environment variables here.
-      # So project_name value is duplicated.
+      # So any custom variables need to be exported from check-changes step.
       project_name: ${{ needs.check-changes.outputs.project_name }}
+      badge_gist_id: ${{ needs.check-changes.outputs.badge_gist_id }}
       db_changed: ${{ needs.check-changes.outputs.db_changed }}
       api_sha_tag: ${{ needs.build-api.outputs.sha }}
       web_sha_tag: ${{ needs.build-web.outputs.sha }}

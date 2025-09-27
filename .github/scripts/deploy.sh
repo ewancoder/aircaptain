@@ -42,11 +42,11 @@ migratedb() {
     fi
 }
 
+DB_CHANGED="${DB_CHANGED:-}"
 API_SHA_TAG="${API_SHA_TAG:-}"
 WEB_SHA_TAG="${WEB_SHA_TAG:-}"
 
-if [ -z "${DB_CHANGED:-}" ] \
-    || [ -z "${PROJECT_NAME:-}" ] \
+if [ -z "${PROJECT_NAME:-}" ] \
     || [ -z "${DEPLOYMENT_ENVIRONMENT:-}" ] \
     || [ -z "${DEPLOYMENT_IS_PRODUCTION:-}" ] \
     || [ -z "${IS_SWARM:-}" ]; then
@@ -169,9 +169,11 @@ else
     # We should never encase this in "" or it won't expand correctly.
     export $(cat .env | xargs)
 
-    echo "Redeploying the stack"
-    if ! docker ps | grep -q "${project_container_name}_postgres"; then
-        # If database is not running - most likely it's the first deployment. Deploying the stack.
+    #if ! docker ps | grep -q "${project_container_name}_postgres"; then
+    # A better way to check whether the stack is deployed.
+    # For some reason we need to use -F key (together with --format), otherwise it doesn't work in pipeline.
+    if ! docker stack ls --format '{{.Name}}' | grep -qF "$project_container_name"; then
+        # If the stack is not running - most likely it's the first deployment. Deploying the stack.
         echo "Database is not running, probably first time deployment. Deploying the stack and migrating DB."
         docker stack deploy "${stack_name}" --compose-file swarm-compose.yml --detach=false
 

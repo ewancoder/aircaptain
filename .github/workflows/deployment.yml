@@ -6,14 +6,17 @@ on:
       project_name:
         required: true
         type: string
-      db_changed:
+      badge_gist_id:
         required: true
+        type: string
+      db_changed:
+        required: false
         type: string
       api_sha_tag:
-        required: true
+        required: false
         type: string
       web_sha_tag:
-        required: true
+        required: false
         type: string
     secrets:
       ssh_host:
@@ -25,6 +28,8 @@ on:
       ssh_key:
         required: true
       ssh_key_passphrase:
+        required: true
+      gist_secret:
         required: true
 jobs:
   deploy-production:
@@ -67,6 +72,42 @@ jobs:
           envs: DB_CHANGED,API_SHA_TAG,WEB_SHA_TAG,PROJECT_NAME,DEPLOYMENT_ENVIRONMENT,DEPLOYMENT_IS_PRODUCTION,IS_SWARM
           script_path: .github/scripts/deploy.sh
 
+      - name: Get current time
+        run: echo "now=$(date -u +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
+
+      - name: Upload DB deployment info to gist
+        if: ${{ inputs.db_changed != '' }}
+        uses: schneegans/dynamic-badges-action@v1.7.0
+        with:
+          auth: ${{ secrets.gist_secret }}
+          gistID: ${{ inputs.badge_gist_id }}
+          filename: ${{ inputs.project_name }}-db-deploy-${{ github.ref_name }}-prod.json
+          label: DB deployed
+          message: "${{ github.ref_name }}-${{ github.sha }}, ${{ env.now }}"
+          color: "#48fa60"
+
+      - name: Upload API deployment info to gist
+        if: ${{ inputs.api_sha_tag != '' }}
+        uses: schneegans/dynamic-badges-action@v1.7.0
+        with:
+          auth: ${{ secrets.gist_secret }}
+          gistID: ${{ inputs.badge_gist_id }}
+          filename: ${{ inputs.project_name }}-api-deploy-${{ github.ref_name }}-prod.json
+          label: API deployed
+          message: "${{ github.ref_name }}-${{ github.sha }}, ${{ env.now }}"
+          color: "#48fa60"
+
+      - name: Upload Web deployment info to gist
+        if: ${{ inputs.web_sha_tag != '' }}
+        uses: schneegans/dynamic-badges-action@v1.7.0
+        with:
+          auth: ${{ secrets.gist_secret }}
+          gistID: ${{ inputs.badge_gist_id }}
+          filename: ${{ inputs.project_name }}-web-deploy-${{ github.ref_name }}-prod.json
+          label: Web deployed
+          message: "${{ github.ref_name }}-${{ github.sha }}, ${{ env.now }}"
+          color: "#48fa60"
+
   deploy-development:
     name: Development
     runs-on: ubuntu-latest
@@ -106,3 +147,39 @@ jobs:
           passphrase: ${{ secrets.ssh_key_passphrase }}
           envs: DB_CHANGED,API_SHA_TAG,WEB_SHA_TAG,PROJECT_NAME,DEPLOYMENT_ENVIRONMENT,DEPLOYMENT_IS_PRODUCTION,IS_SWARM
           script_path: .github/scripts/deploy.sh
+
+      - name: Get current time
+        run: echo "now=$(date -u +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
+
+      - name: Upload DB deployment info to gist
+        if: ${{ inputs.db_changed != '' }}
+        uses: schneegans/dynamic-badges-action@v1.7.0
+        with:
+          auth: ${{ secrets.gist_secret }}
+          gistID: ${{ inputs.badge_gist_id }}
+          filename: ${{ inputs.project_name }}-db-deploy-${{ github.ref_name }}-dev.json
+          label: DB deployed
+          message: "${{ github.ref_name }}-${{ github.sha }}, ${{ env.now }}"
+          color: "#48fa60"
+
+      - name: Upload API deployment info to gist
+        if: ${{ inputs.api_sha_tag != '' }}
+        uses: schneegans/dynamic-badges-action@v1.7.0
+        with:
+          auth: ${{ secrets.gist_secret }}
+          gistID: ${{ inputs.badge_gist_id }}
+          filename: ${{ inputs.project_name }}-api-deploy-${{ github.ref_name }}-dev.json
+          label: API deployed
+          message: "${{ github.ref_name }}-${{ github.sha }}, ${{ env.now }}"
+          color: "#48fa60"
+
+      - name: Upload Web deployment info to gist
+        if: ${{ inputs.web_sha_tag != '' }}
+        uses: schneegans/dynamic-badges-action@v1.7.0
+        with:
+          auth: ${{ secrets.gist_secret }}
+          gistID: ${{ inputs.badge_gist_id }}
+          filename: ${{ inputs.project_name }}-web-deploy-${{ github.ref_name }}-dev.json
+          label: Web deployed
+          message: "${{ github.ref_name }}-${{ github.sha }}, ${{ env.now }}"
+          color: "#48fa60"
