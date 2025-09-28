@@ -7,6 +7,8 @@
 | --- | -- |
 | [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=ewancoder_aircaptain-api)](https://sonarcloud.io/summary/new_code?id=ewancoder_aircaptain-api) | [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=ewancoder_aircaptain-web)](https://sonarcloud.io/summary/new_code?id=ewancoder_aircaptain-web) |
 
+A bunch of apps for Flight simulation.
+
 ## Production deployment status
 
 ![prod-deployed-db-build](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/ewancoder/0184962696ef0364be7a3f491133f2f9/raw/aircaptain-db-deploy-prod.json)
@@ -25,6 +27,7 @@
 ![main-status](https://img.shields.io/github/last-commit/ewancoder-tyr/aircaptain/main)
 ![main-api-coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/ewancoder/0184962696ef0364be7a3f491133f2f9/raw/aircaptain-api-coverage-main.json)
 ![main-web-coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/ewancoder/0184962696ef0364be7a3f491133f2f9/raw/aircaptain-web-coverage-main.json)
+![main-todos](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/ewancoder/0184962696ef0364be7a3f491133f2f9/raw/aircaptain-todos-main.json)
 ![main-latest-api-build](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/ewancoder/0184962696ef0364be7a3f491133f2f9/raw/aircaptain-api-build-main.json)
 ![main-latest-web-build](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/ewancoder/0184962696ef0364be7a3f491133f2f9/raw/aircaptain-web-build-main.json)
 
@@ -35,5 +38,6 @@
 ![develop-diff](https://img.shields.io/github/commits-difference/ewancoder-tyr/aircaptain?base=main&head=develop&logo=git&label=diff&color=orange)
 ![develop-api-coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/ewancoder/0184962696ef0364be7a3f491133f2f9/raw/aircaptain-api-coverage-develop.json)
 ![develop-web-coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/ewancoder/0184962696ef0364be7a3f491133f2f9/raw/aircaptain-web-coverage-develop.json)
+![develop-todos](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/ewancoder/0184962696ef0364be7a3f491133f2f9/raw/aircaptain-todos-develop.json)
 ![develop-latest-api-build](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/ewancoder/0184962696ef0364be7a3f491133f2f9/raw/aircaptain-api-build-develop.json)
 ![develop-latest-web-build](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/ewancoder/0184962696ef0364be7a3f491133f2f9/raw/aircaptain-web-build-develop.json)
