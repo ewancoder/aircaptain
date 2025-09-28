@@ -28,6 +28,7 @@
 
 ![develop-ci](https://github.com/ewancoder-tyr/aircaptain/actions/workflows/deploy.yml/badge.svg?branch=develop)
 ![develop-status](https://img.shields.io/github/last-commit/ewancoder-tyr/aircaptain/develop)
+![develop-diff](https://img.shields.io/github/commits-difference/ewancoder-tyr/aircaptain?base=main&head=develop&logo=git&label=diff&color=orange)
 ![develop-api-coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/ewancoder/0184962696ef0364be7a3f491133f2f9/raw/aircaptain-api-coverage-develop.json)
 ![develop-web-coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/ewancoder/0184962696ef0364be7a3f491133f2f9/raw/aircaptain-web-coverage-develop.json)
 ![develop-latest-api-build](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/ewancoder/0184962696ef0364be7a3f491133f2f9/raw/aircaptain-api-build-develop.json)
