@@ -1,9 +1,9 @@
-name: ${PREFIX}aircaptain
+name: ${ENV}-aircaptain
 
 networks:
   internet:
   local:
-    name: ${PREFIX}aircaptain-local-internal
+    name: ${ENV}-aircaptain-local-internal
     internal: true
   public:
     name: tyr-proxy-internal
@@ -31,7 +31,7 @@ services:
 
   api:
     image: ghcr.io/ewancoder-tyr/aircaptain-api:${API_TAG}
-    #container_name: ${PREFIX}aircaptain-api
+    #container_name: ${ENV}-aircaptain-api
     volumes:
       - /root/dp.pfx:/app/dp.pfx
     restart: unless-stopped
@@ -53,7 +53,7 @@ services:
 
   postgres:
     image: postgres:17
-    container_name: ${PREFIX}aircaptain-postgres
+    container_name: ${ENV}-aircaptain-postgres
     volumes:
       - /data/${VOLUME_ROOT}/postgres:/var/lib/postgresql/data
     ports:
@@ -64,7 +64,7 @@ services:
     env_file:
       - /data/${VOLUME_ROOT}/secrets.env
     healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "postgres" ]
+      test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -75,7 +75,7 @@ services:
 
   cache:
     image: valkey/valkey
-    container_name: ${PREFIX}aircaptain-cache
+    container_name: ${ENV}-aircaptain-cache
     command: valkey-server --save 60 1
     restart: unless-stopped
     ports:
@@ -96,7 +96,7 @@ services:
 
   web:
     image: ghcr.io/ewancoder-tyr/aircaptain-web:${WEB_TAG}
-    #container_name: ${PREFIX}aircaptain-web
+    #container_name: ${ENV}-aircaptain-web
     restart: unless-stopped
     mem_limit: 1g
     mem_reservation: 750m

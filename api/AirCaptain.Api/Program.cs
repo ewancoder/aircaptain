@@ -5,6 +5,9 @@ var isDebug = false;
 isDebug = true;
 #endif
 
+DotNetEnv.Env.Load("/run/secrets/global-secrets.env");
+DotNetEnv.Env.Load("/run/secrets/secrets.env");
+
 var builder = WebApplication.CreateBuilder(args);
 
 var config = TyrHostConfiguration.Default(

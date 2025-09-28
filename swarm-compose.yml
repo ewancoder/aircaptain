@@ -1,7 +1,7 @@
 networks:
   internet:
   local:
-    name: swarm-${PREFIX}aircaptain-local-internal
+    name: swarm-${ENV}-aircaptain-local-internal
     attachable: true # So that we can attach to the database for deployment.
     driver: overlay
     internal: true
@@ -18,6 +18,16 @@ networks:
     driver: overlay
     external: true
 
+secrets:
+  tyr_prod_postgres_password:
+    external: true
+  tyr_dev_postgres_password:
+    external: true
+  tyr_prod_aircaptain:
+    external: true
+  tyr_dev_aircaptain:
+    external: true
+
 services:
   postgres:
     image: postgres:17
@@ -26,10 +36,14 @@ services:
     ports:
       - ${POSTGRES_PORT}
     restart: unless-stopped
-    env_file:
-      - /data/${VOLUME_ROOT}/secrets.env
+    secrets:
+      - tyr_${ENV}_postgres_password
+    environment:
+      POSTGRES_PASSWORD_FILE: /run/secrets/tyr_${ENV}_postgres_password
+    #env_file:
+    #  - /data/${VOLUME_ROOT}/secrets.env
     healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "postgres" ]
+      test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -53,10 +67,10 @@ services:
     restart: unless-stopped
     ports:
       - ${CACHE_PORT}
-    env_file:
-      - /data/${VOLUME_ROOT}/secrets.env
+    #env_file:
+    #  - /data/${VOLUME_ROOT}/secrets.env
     healthcheck:
-      test: [ "CMD", "valkey-cli", "ping" ]
+      test: ["CMD", "valkey-cli", "ping"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -79,8 +93,11 @@ services:
     volumes:
       - /root/dp.pfx:/app/dp.pfx
     restart: unless-stopped
-    env_file:
-      - /data/${VOLUME_ROOT}/secrets.env
+    secrets:
+      - source: tyr_${ENV}_aircaptain
+        target: secrets.env
+    #env_file:
+    #  - /data/${VOLUME_ROOT}/secrets.env
     environment:
       - HEALTHCHECK_URI=http://localhost:8080/health
     networks:
