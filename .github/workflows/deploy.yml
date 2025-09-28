@@ -157,7 +157,9 @@ jobs:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get current time
-        run: echo "now=$(date -u +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
+        run: |
+          echo "now=$(date -u +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
+          echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
       - name: Upload build info to gist
         uses: schneegans/dynamic-badges-action@v1.7.0
@@ -166,7 +168,7 @@ jobs:
           gistID: ${{ env.BADGE_GIST_ID }}
           filename: ${{ env.PROJECT_NAME }}-api-build-${{ github.ref_name }}.json
           label: API build
-          message: "${{ github.ref_name }}-${{ github.sha }}, ${{ env.now }}"
+          message: "${{ github.ref_name }}-${{ env.short_sha }}, ${{ env.now }} utc"
           color: "#b685f2"
 
   test-web:
@@ -241,7 +243,9 @@ jobs:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get current time
-        run: echo "now=$(date -u +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
+        run: |
+          echo "now=$(date -u +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
+          echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
       - name: Upload build info to gist
         uses: schneegans/dynamic-badges-action@v1.7.0
@@ -250,7 +254,7 @@ jobs:
           gistID: ${{ env.BADGE_GIST_ID }}
           filename: ${{ env.PROJECT_NAME }}-web-build-${{ github.ref_name }}.json
           label: Web build
-          message: "${{ github.ref_name }}-${{ github.sha }}, ${{ env.now }}"
+          message: "${{ github.ref_name }}-${{ env.short_sha }}, ${{ env.now }} utc"
           color: "#b685f2"
 
   deployment:

@@ -73,7 +73,9 @@ jobs:
           script_path: .github/scripts/deploy.sh
 
       - name: Get current time
-        run: echo "now=$(date -u +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
+        run: |
+          echo "now=$(date -u +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
+          echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
       - name: Upload DB deployment info to gist
         if: ${{ inputs.db_changed != '' }}
@@ -83,7 +85,7 @@ jobs:
           gistID: ${{ inputs.badge_gist_id }}
           filename: ${{ inputs.project_name }}-db-deploy-prod.json
           label: DB deployed
-          message: "${{ github.ref_name }}-${{ github.sha }}, ${{ env.now }}"
+          message: "${{ github.ref_name }}-${{ env.short_sha }}, ${{ env.now }} utc"
           color: "#48fa60"
 
       - name: Upload API deployment info to gist
@@ -94,7 +96,7 @@ jobs:
           gistID: ${{ inputs.badge_gist_id }}
           filename: ${{ inputs.project_name }}-api-deploy-prod.json
           label: API deployed
-          message: "${{ github.ref_name }}-${{ github.sha }}, ${{ env.now }}"
+          message: "${{ github.ref_name }}-${{ env.short_sha }}, ${{ env.now }} utc"
           color: "#48fa60"
 
       - name: Upload Web deployment info to gist
@@ -105,7 +107,7 @@ jobs:
           gistID: ${{ inputs.badge_gist_id }}
           filename: ${{ inputs.project_name }}-web-deploy-prod.json
           label: Web deployed
-          message: "${{ github.ref_name }}-${{ github.sha }}, ${{ env.now }}"
+          message: "${{ github.ref_name }}-${{ env.short_sha }}, ${{ env.now }} utc"
           color: "#48fa60"
 
   deploy-development:
@@ -149,7 +151,9 @@ jobs:
           script_path: .github/scripts/deploy.sh
 
       - name: Get current time
-        run: echo "now=$(date -u +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
+        run: |
+          echo "now=$(date -u +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
+          echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
       - name: Upload DB deployment info to gist
         if: ${{ inputs.db_changed != '' }}
@@ -159,7 +163,7 @@ jobs:
           gistID: ${{ inputs.badge_gist_id }}
           filename: ${{ inputs.project_name }}-db-deploy-dev.json
           label: DB deployed
-          message: "${{ github.ref_name }}-${{ github.sha }}, ${{ env.now }}"
+          message: "${{ github.ref_name }}-${{ env.short_sha }}, ${{ env.now }} utc"
           color: "#48fa60"
 
       - name: Upload API deployment info to gist
@@ -170,7 +174,7 @@ jobs:
           gistID: ${{ inputs.badge_gist_id }}
           filename: ${{ inputs.project_name }}-api-deploy-dev.json
           label: API deployed
-          message: "${{ github.ref_name }}-${{ github.sha }}, ${{ env.now }}"
+          message: "${{ github.ref_name }}-${{ env.short_sha }}, ${{ env.now }} utc"
           color: "#48fa60"
 
       - name: Upload Web deployment info to gist
@@ -181,5 +185,5 @@ jobs:
           gistID: ${{ inputs.badge_gist_id }}
           filename: ${{ inputs.project_name }}-web-deploy-dev.json
           label: Web deployed
-          message: "${{ github.ref_name }}-${{ github.sha }}, ${{ env.now }}"
+          message: "${{ github.ref_name }}-${{ env.short_sha }}, ${{ env.now }} utc"
           color: "#48fa60"
