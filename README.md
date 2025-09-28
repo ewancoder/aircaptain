@@ -3,6 +3,10 @@
 ![license](https://img.shields.io/github/license/ewancoder-tyr/aircaptain?color=blue)
 ![activity](https://img.shields.io/github/commit-activity/m/ewancoder-tyr/aircaptain)
 
+| API | UI |
+| --- | -- |
+| [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=ewancoder_aircaptain-api)](https://sonarcloud.io/summary/new_code?id=ewancoder_aircaptain-api) | [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=ewancoder_aircaptain-web)](https://sonarcloud.io/summary/new_code?id=ewancoder_aircaptain-web) |
+
 ## Production deployment status
 
 ![prod-deployed-db-build](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/ewancoder/0184962696ef0364be7a3f491133f2f9/raw/aircaptain-db-deploy-prod.json)
