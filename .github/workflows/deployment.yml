@@ -81,7 +81,7 @@ jobs:
         with:
           auth: ${{ secrets.gist_secret }}
           gistID: ${{ inputs.badge_gist_id }}
-          filename: ${{ inputs.project_name }}-db-deploy-${{ github.ref_name }}-prod.json
+          filename: ${{ inputs.project_name }}-db-deploy-prod.json
           label: DB deployed
           message: "${{ github.ref_name }}-${{ github.sha }}, ${{ env.now }}"
           color: "#48fa60"
@@ -92,7 +92,7 @@ jobs:
         with:
           auth: ${{ secrets.gist_secret }}
           gistID: ${{ inputs.badge_gist_id }}
-          filename: ${{ inputs.project_name }}-api-deploy-${{ github.ref_name }}-prod.json
+          filename: ${{ inputs.project_name }}-api-deploy-prod.json
           label: API deployed
           message: "${{ github.ref_name }}-${{ github.sha }}, ${{ env.now }}"
           color: "#48fa60"
@@ -103,7 +103,7 @@ jobs:
         with:
           auth: ${{ secrets.gist_secret }}
           gistID: ${{ inputs.badge_gist_id }}
-          filename: ${{ inputs.project_name }}-web-deploy-${{ github.ref_name }}-prod.json
+          filename: ${{ inputs.project_name }}-web-deploy-prod.json
           label: Web deployed
           message: "${{ github.ref_name }}-${{ github.sha }}, ${{ env.now }}"
           color: "#48fa60"
@@ -157,7 +157,7 @@ jobs:
         with:
           auth: ${{ secrets.gist_secret }}
           gistID: ${{ inputs.badge_gist_id }}
-          filename: ${{ inputs.project_name }}-db-deploy-${{ github.ref_name }}-dev.json
+          filename: ${{ inputs.project_name }}-db-deploy-dev.json
           label: DB deployed
           message: "${{ github.ref_name }}-${{ github.sha }}, ${{ env.now }}"
           color: "#48fa60"
@@ -168,7 +168,7 @@ jobs:
         with:
           auth: ${{ secrets.gist_secret }}
           gistID: ${{ inputs.badge_gist_id }}
-          filename: ${{ inputs.project_name }}-api-deploy-${{ github.ref_name }}-dev.json
+          filename: ${{ inputs.project_name }}-api-deploy-dev.json
           label: API deployed
           message: "${{ github.ref_name }}-${{ github.sha }}, ${{ env.now }}"
           color: "#48fa60"
@@ -179,7 +179,7 @@ jobs:
         with:
           auth: ${{ secrets.gist_secret }}
           gistID: ${{ inputs.badge_gist_id }}
-          filename: ${{ inputs.project_name }}-web-deploy-${{ github.ref_name }}-dev.json
+          filename: ${{ inputs.project_name }}-web-deploy-dev.json
           label: Web deployed
           message: "${{ github.ref_name }}-${{ github.sha }}, ${{ env.now }}"
           color: "#48fa60"
