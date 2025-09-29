@@ -444,3 +444,14 @@ internal sealed class BearerSchemeTransformer(IAuthenticationSchemeProvider auth
         }
     }
 }
+
+public static class TyrApplication
+{
+    public static WebApplicationBuilder CreateBuilder(string[] args)
+    {
+        DotNetEnv.Env.Load("/run/secrets/global-secrets.env");
+        DotNetEnv.Env.Load("/run/secrets/secrets.env");
+
+        return WebApplication.CreateBuilder(args);
+    }
+}
