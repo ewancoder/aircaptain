@@ -35,6 +35,7 @@ secrets:
 services:
   postgres:
     image: postgres:17
+    user: 2000:2000
     volumes:
       - /data/${VOLUME_ROOT}/postgres:/var/lib/postgresql/data
     ports:
@@ -44,8 +45,6 @@ services:
       - tyr_${ENV}_postgres_password
     environment:
       POSTGRES_PASSWORD_FILE: /run/secrets/tyr_${ENV}_postgres_password
-    #env_file:
-    #  - /data/${VOLUME_ROOT}/secrets.env
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 5s
@@ -67,12 +66,13 @@ services:
 
   cache:
     image: valkey/valkey
-    command: valkey-server --save 60 1
+    user: 2000:2000
+    command: valkey-server --save 60 1 --dir /data
+    volumes:
+      - /data/${VOLUME_ROOT}/cache
     restart: unless-stopped
     ports:
       - ${CACHE_PORT}
-    #env_file:
-    #  - /data/${VOLUME_ROOT}/secrets.env
     healthcheck:
       test: ["CMD", "valkey-cli", "ping"]
       interval: 5s
@@ -100,8 +100,6 @@ services:
         target: secrets.env
       - source: tyr_${ENV}_dp
         target: dp.pfx
-    #env_file:
-    #  - /data/${VOLUME_ROOT}/secrets.env
     environment:
       - HEALTHCHECK_URI=http://localhost:8080/health
     networks:
