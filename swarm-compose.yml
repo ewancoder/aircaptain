@@ -27,6 +27,10 @@ secrets:
     external: true
   tyr_dev_aircaptain:
     external: true
+  tyr_prod_dp:
+    external: true
+  tyr_dev_dp:
+    external: true
 
 services:
   postgres:
@@ -90,12 +94,12 @@ services:
 
   api:
     image: ghcr.io/ewancoder-tyr/aircaptain-api:${API_TAG}
-    volumes:
-      - /root/dp.pfx:/app/dp.pfx
     restart: unless-stopped
     secrets:
       - source: tyr_${ENV}_aircaptain
         target: secrets.env
+      - source: tyr_${ENV}_dp
+        target: dp.pfx
     #env_file:
     #  - /data/${VOLUME_ROOT}/secrets.env
     environment:

@@ -94,12 +94,16 @@ public sealed record TyrHostConfiguration(
         if (cacheConnectionString is not null)
             cacheConnectionString += ",abortConnect=false,defaultDatabase=1";
 
+        var dataProtectionCertPath = File.Exists("/run/secrets/dp.pfx")
+            ? "/run/secrets/dp.pfx"
+            : "df.pfx";
+
         // TODO: Implement cookies authentication for typingrealm.org too.
         return new(
             globalCacheConnectionString,
             cacheConnectionString,
             DataProtectionKeysPath: "/app/dataprotection",
-            DataProtectionCertPath: "dp.pfx",
+            DataProtectionCertPath: dataProtectionCertPath,
             DataProtectionCertPassword: isDebug ? string.Empty : ReadConfig("DpCertPassword", configuration),
             AuthCookieName: authCookieName,
             CookiesDomain: TryReadConfig("CookiesDomain", configuration) ?? "typingrealm.com",
