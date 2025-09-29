@@ -169,6 +169,16 @@ else
     # We should never encase this in "" or it won't expand correctly.
     export $(cat .env | xargs)
 
+    # Replace all the secrets with their latest version.
+    for secret in $(yq -r '.secrets | keys | .[]' swarm-compose.yml); do
+        base=$(echo "$secret" | sed -E 's/_[0-9]+$//')
+        latest=$(docker secret ls --format '{{.Name}}' | grep -E "^${base}$|^${base}_[0-9]+" | sort -V | tail -n1)
+        if [ "$secret" != "$latest" ]; then
+            echo "Replacing latest secret: $secret -> $latest"
+            sed -i "s/\b$secret\b/$latest/g" swarm-compose.yml
+        fi
+    done
+
     #if ! docker ps | grep -q "${project_container_name}_postgres"; then
     # A better way to check whether the stack is deployed.
     # For some reason we need to use -F key (together with --format), otherwise it doesn't work in pipeline.
