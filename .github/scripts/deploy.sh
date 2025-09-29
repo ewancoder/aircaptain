@@ -174,8 +174,11 @@ else
         base=$(echo "$secret" | sed -E 's/_[0-9]+$//')
         latest=$(docker secret ls --format '{{.Name}}' | grep -E "^${base}$|^${base}_[0-9]+" | sort -V | tail -n1)
         if [ "$secret" != "$latest" ]; then
+            pattern=$(echo "$secret" | sed "s/$ENV/\\\${ENV}/")
+
             echo "Replacing latest secret: $secret -> $latest"
             sed -i "s/\b$secret\b/$latest/g" swarm-compose.yml
+            sed -i "s/\b$pattern\b/$latest/g" swarm-compose.yml
         fi
     done
 
