@@ -51,7 +51,7 @@ jobs:
           key: ${{ secrets.ssh_key }}
           passphrase: ${{ secrets.ssh_key_passphrase }}
           source: "db,docker-compose.yml,swarm-compose.yml,.env.prod"
-          target: /tmp/${{ inputs.project_name }}_prod
+          target: /tmp/tyr/prod/${{ inputs.project_name }}
 
       - name: Deploy to Production
         uses: appleboy/ssh-action@v1.2.2
@@ -129,7 +129,7 @@ jobs:
           key: ${{ secrets.ssh_key }}
           passphrase: ${{ secrets.ssh_key_passphrase }}
           source: "db,docker-compose.yml,swarm-compose.yml,.env.dev"
-          target: /tmp/${{ inputs.project_name }}_dev
+          target: /tmp/tyr/dev/${{ inputs.project_name }}
 
       - name: Deploy to Development
         uses: appleboy/ssh-action@v1.2.2

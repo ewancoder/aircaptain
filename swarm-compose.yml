@@ -1,35 +1,30 @@
 networks:
-  internet:
+  internet: # For UDP services to expose ports on Development env.
   local:
-    name: swarm-${ENV}-aircaptain-local-internal
+    name: tyr-$ENV-aircaptain-net
+    internal: true
+  deploy:
+    name: tyr-$ENV-aircaptain-net-deploy
     attachable: true # So that we can attach to the database for deployment.
-    driver: overlay
     internal: true
   public:
-    name: tyr-proxy-internal
-    driver: overlay
+    name: tyr-$ENV-net-proxy
     external: true
   infra:
-    name: tyr-infrastructure-internal
-    driver: overlay
+    name: tyr-$ENV-net-infrastructure
     external: true
   admin:
-    name: tyr-administration-internal
-    driver: overlay
+    name: tyr-$ENV-net-administration
     external: true
 
 secrets:
-  tyr_prod_postgres_password:
+  tyr-$ENV-sec-postgres-password:
     external: true
-  tyr_dev_postgres_password:
+  tyr-$ENV-sec-dp:
     external: true
-  tyr_prod_aircaptain:
+  tyr-$ENV-sec-secrets:
     external: true
-  tyr_dev_aircaptain:
-    external: true
-  tyr_prod_dp:
-    external: true
-  tyr_dev_dp:
+  tyr-$ENV-aircaptain-sec-secrets:
     external: true
 
 services:
@@ -37,14 +32,15 @@ services:
     image: postgres:17
     user: 2000:2000
     volumes:
-      - /data/${VOLUME_ROOT}/postgres:/var/lib/postgresql/data
+      - /data/tyr/$ENV/aircaptain/postgres:/var/lib/postgresql/data
     ports:
       - ${POSTGRES_PORT}
     restart: unless-stopped
     secrets:
-      - tyr_${ENV}_postgres_password
+      - source: tyr-$ENV-sec-postgres-password
+        target: db-password
     environment:
-      POSTGRES_PASSWORD_FILE: /run/secrets/tyr_${ENV}_postgres_password
+      POSTGRES_PASSWORD_FILE: /run/secrets/db-password
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 5s
@@ -52,6 +48,7 @@ services:
       retries: 5
     networks:
       - local
+      - deploy
       #- admin    # Disabled in production until needed.
       #- internet # Needed for development env to expose ports to host.
     deploy:
@@ -69,7 +66,7 @@ services:
     user: 2000:2000
     command: valkey-server --save 60 1 --dir /data
     volumes:
-      - /data/${VOLUME_ROOT}/cache
+      - /data/tyr/$ENV/aircaptain/cache:/data
     restart: unless-stopped
     ports:
       - ${CACHE_PORT}
@@ -96,9 +93,11 @@ services:
     image: ghcr.io/ewancoder-tyr/aircaptain-api:${API_TAG}
     restart: unless-stopped
     secrets:
-      - source: tyr_${ENV}_aircaptain
+      - source: tyr-$ENV-sec-secrets
+        target: global-secrets.env
+      - source: tyr-$ENV-aircaptain-sec-secrets
         target: secrets.env
-      - source: tyr_${ENV}_dp
+      - source: tyr-$ENV-sec-dp
         target: dp.pfx
     environment:
       - HEALTHCHECK_URI=http://localhost:8080/health

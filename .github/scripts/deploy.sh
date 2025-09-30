@@ -54,8 +54,9 @@ if [ -z "${PROJECT_NAME:-}" ] \
     exit 1
 fi
 
+scope="tyr"
 # This folder is used both for deployment files (/tmp/folder) and for data placement (/data/folder).
-folder="${PROJECT_NAME}_${DEPLOYMENT_ENVIRONMENT}"
+folder="${scope}/${DEPLOYMENT_ENVIRONMENT}/${PROJECT_NAME}"
 compose_file="docker-compose.yml"
 if [[ "${IS_SWARM}" == "true" ]]; then
     compose_file="swarm-compose.yml" # We use a separate compose file for Swarm deployments.
@@ -64,7 +65,7 @@ fi
 # Project/Stack name should always have a prefix, even for production.
 # Otherwise GREP for prod containers will find other envs.
 # Will be prod-app for prod, dev-app for dev.
-project_container_name="${DEPLOYMENT_ENVIRONMENT}-${PROJECT_NAME}"
+project_container_name="${scope}-${DEPLOYMENT_ENVIRONMENT}-${PROJECT_NAME}"
 stack_name="${project_container_name}"
 
 echo "DB_CHANGED: ${DB_CHANGED}"
@@ -169,16 +170,20 @@ else
     # We should never encase this in "" or it won't expand correctly.
     export $(cat .env | xargs)
 
+    # Replace all $ENV in the swarm-compose.yml
+    sed -i "s/\$ENV/$ENV/g" swarm-compose.yml
     # Replace all the secrets with their latest version.
     for secret in $(yq -r '.secrets | keys | .[]' swarm-compose.yml); do
         base=$(echo "$secret" | sed -E 's/_[0-9]+$//')
         latest=$(docker secret ls --format '{{.Name}}' | grep -E "^${base}$|^${base}_[0-9]+" | sort -V | tail -n1)
         if [ "$secret" != "$latest" ]; then
-            pattern=$(echo "$secret" | sed "s/$ENV/\\\${ENV}/")
 
             echo "Replacing latest secret: $secret -> $latest"
             sed -i "s/\b$secret\b/$latest/g" swarm-compose.yml
-            sed -i "s/\b$pattern\b/$latest/g" swarm-compose.yml
+
+            # We don't need to replace the pattern anymore because we substitute the value of $ENV to the file beforehand.
+            #pattern=$(echo "$secret" | sed "s/$ENV/\\\${ENV}/")
+            #sed -i "s/\b$pattern\b/$latest/g" swarm-compose.yml
         fi
     done
 
@@ -191,7 +196,7 @@ else
         docker stack deploy "${stack_name}" --compose-file swarm-compose.yml --detach=false
 
         # Migrate the database (more info above, in the non-swarm comments).
-        network_name=$(docker compose -f swarm-compose.yml config --format json | jq -r '.networks["local"].name')
+        network_name=$(docker compose -f swarm-compose.yml config --format json | jq -r '.networks["deploy"].name')
 
         # Migrate the DB.
         migratedb "${folder}" "${network_name}"
@@ -202,7 +207,7 @@ else
     if [ "$DB_CHANGED" == "true" ]; then
         # If database has changed - migrate the database first.
         echo 'Database is running, and DB scripts have changed. Migrating the database'
-        network_name=$(docker compose -f swarm-compose.yml config --format json | jq -r '.networks["local"].name')
+        network_name=$(docker compose -f swarm-compose.yml config --format json | jq -r '.networks["deploy"].name')
 
         # Migrate the DB.
         migratedb "${folder}" "${network_name}"
