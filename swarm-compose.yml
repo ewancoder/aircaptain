@@ -1,7 +1,8 @@
 networks:
   internet: # For UDP services to expose ports on Development env.
+    name: tyr-$ENV-aircaptain-net-internet
   local:
-    name: tyr-$ENV-aircaptain-net
+    name: tyr-$ENV-aircaptain-net-local
     internal: true
   deploy:
     name: tyr-$ENV-aircaptain-net-deploy
@@ -22,9 +23,9 @@ secrets:
     external: true
   tyr-$ENV-sec-dp:
     external: true
-  tyr-$ENV-sec-secrets:
+  tyr-$ENV-sec-env:
     external: true
-  tyr-$ENV-aircaptain-sec-secrets:
+  tyr-$ENV-aircaptain-sec-env:
     external: true
 
 services:
@@ -33,9 +34,9 @@ services:
     user: 2000:2000
     volumes:
       - /data/tyr/$ENV/aircaptain/postgres:/var/lib/postgresql/data
+    restart: unless-stopped
     ports:
       - ${POSTGRES_PORT}
-    restart: unless-stopped
     secrets:
       - source: tyr-$ENV-sec-postgres-password
         target: db-password
@@ -93,12 +94,12 @@ services:
     image: ghcr.io/ewancoder-tyr/aircaptain-api:${API_TAG}
     restart: unless-stopped
     secrets:
-      - source: tyr-$ENV-sec-secrets
-        target: global-secrets.env
-      - source: tyr-$ENV-aircaptain-sec-secrets
-        target: secrets.env
       - source: tyr-$ENV-sec-dp
         target: dp.pfx
+      - source: tyr-$ENV-sec-env
+        target: global-secrets.env
+      - source: tyr-$ENV-aircaptain-sec-env
+        target: secrets.env
     environment:
       - HEALTHCHECK_URI=http://localhost:8080/health
     networks:
