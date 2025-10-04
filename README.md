@@ -1,11 +1,15 @@
 # AirCaptain - your virtual flight deck center
 
+Main repo: [typingrealm/aircaptain](https://github.com/ewancoder-tyr/aircaptain)
+
+Mirrors: [ewancoder](https://github.com/ewancoder/aircaptain) [gitlab](https://gitlab.com/ewancoder/aircaptain)
+
 ![license](https://img.shields.io/github/license/ewancoder-tyr/aircaptain?color=blue)
 ![activity](https://img.shields.io/github/commit-activity/m/ewancoder-tyr/aircaptain)
 
 | API | UI |
 | --- | -- |
-| [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=ewancoder_aircaptain-api)](https://sonarcloud.io/summary/new_code?id=ewancoder_aircaptain-api) | [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=ewancoder_aircaptain-web)](https://sonarcloud.io/summary/new_code?id=ewancoder_aircaptain-web) |
+| [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=ewancoder-aircaptain-api)](https://sonarcloud.io/summary/new_code?id=ewancoder-aircaptain-api) | [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=ewancoder-aircaptain-web)](https://sonarcloud.io/summary/new_code?id=ewancoder-aircaptain-web) |
 
 A bunch of apps for Flight simulation.
 
